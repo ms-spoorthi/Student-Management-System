@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principal Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --text-color: #333;
+            --border-color: #ddd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 20px 0;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .sidebar-header h2 {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .sidebar-logo {
+            height: 60px;
+            margin-right: 15px;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .menu-item:hover {
+            background-color: #2392d3;
+        }
+        
+        .menu-item.active {
+            background-color: var(--primary-color);
+        }
+        
+        .menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .main-content {
+            padding: 0;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .college-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .college-logo img {
+            height: 80px;
+            margin-right: 15px;
+        }
+        
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+        
+        .theme-toggle {
+            margin-right: 20px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: var(--dark-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-right: 25px;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        .logout-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .content-area {
+            padding: 25px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .dashboard-heading {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .dashboard-subheading {
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        /* Ensure card-grid layout for departments */
+        .card-grid {
+            display: grid;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        /* Responsive adjustments for department cards */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* Modal styling consistency */
+        .modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Event table styling */
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .event-table th, .event-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .event-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .event-table tr:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        /* Responsive adjustments for department cards */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        
+        /* Modal styling consistency */
+        .modal-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Event table styling */
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .event-table th, .event-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .event-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .event-table tr:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .card-header h3 {
+            color: var(--dark-color);
+            font-size: 1.2rem;
+        }
+        
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .card-body {
+            color: #666;
+        }
+        
+        .list-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        .date-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .status-label {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+        
+        .status-approved {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .status-in-progress {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .data-table tr:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #1a252f;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-secondary {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+        
+        .badge-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+        
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .progress-container {
+            background-color: #e9ecef;
+            border-radius: 4px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            transition: width 0.5s;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .stats-card {
+            text-align: center;
+            padding: 25px 15px;
+        }
+        
+        .stats-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .department-card {
+            margin-bottom: 25px;
+        }
+        
+        .department-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .department-title {
+            font-size: 1.3rem;
+            color: var(--dark-color);
+        }
+        
+        .department-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .metric-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .metric-item h4 {
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+        
+        .metric-item p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .search-container {
+            margin-bottom: 25px;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex-grow: 1;
+        }
+        
+        .student-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+       .student-section {
+    background-color: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+        
+        .student-section h3 {
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .detail-label {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+        
+        .detail-value {
+            color: #666;
+        }
+        
+        .announcement-form {
+            margin-top: 25px;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .gallery-grid img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-grid img:hover {
+            transform: scale(1.05);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #444;
+        }
+        
+        .modal-content input[type="file"],
+        .modal-content input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 992px) {
+            .card-grid, .department-metrics, .student-details, .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+                position: fixed;
+                width: 280px;
+                z-index: 1000;
+                height: 100%;
+            }
+            
+            .sidebar.active {
+                display: block;
+            }
+            
+            .header {
+                padding: 15px;
+            }
+            
+            .mobile-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: var(--dark-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                margin-right: 15px;
+            }
+            
+            .content-area {
+                padding: 15px;
+            }
+            
+            .card-grid, .department-metrics, .student-details, .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .college-logo span {
+                display: none;
+            }
+            
+            .user-name {
+                display: none;
+            }
+        }
+        
+        #calendar-container {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        #calendar {
+            max-width: 100%;
+            margin: 0 auto;
+            height: 600px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .fc-header-toolbar {
+            padding: 10px;
+            background-color: var(--light-color);
+            border-radius: 4px;
+            margin-bottom: 10px !important;
+        }
+        
+        .fc-toolbar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .fc-button {
+            background-color: var(--primary-color) !important;
+            border: none !important;
+            color: white !important;
+            padding: 6px 12px !important;
+            border-radius: 4px !important;
+        }
+        
+        .fc-button:hover {
+            background-color: #1a252f !important;
+        }
+        
+        .fc-daygrid-day-number, .fc-col-header-cell-cushion {
+            color: var(--dark-color);
+            text-decoration: none !important;
+        }
+        
+        .fc-day-today {
+            background-color: rgba(52, 152, 219, 0.1) !important;
+        }
+        
+        .fc-event {
+            cursor: pointer;
+            border: none !important;
+            padding: 3px 6px !important;
+        }
+        
+        .fc-event:hover {
+            opacity: 0.9;
+        }
+        
+        .fc-event-title {
+            font-weight: 500;
+        }
+        
+        .college-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--dark-color);
+            text-transform: uppercase;
+        }
+        
+        /* Research Categories and Department Buttons */
+        /* Grid Layout */
+        .category-buttons,
+        .department-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+            min-height: 100px; /* Prevents layout shift when content changes */
+            transition: none; /* Avoids grid animation issues */
+        }
+        
+        /* Button Styles */
+        .category-btn,
+        .department-btn {
+            background-color: var(--light-color);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        /* Button Icon */
+        .category-btn i,
+        .department-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Hover States */
+        .category-btn:hover,
+        .department-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Active States */
+        .category-btn.active,
+        .department-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Back Button */
+        .back-btn {
+            margin-bottom: 20px;
+            display: inline-flex; /* Ensures consistent button alignment */
+            align-items: center;
+        }
+        
+        /* Department Heading */
+        .department-buttons h3 {
+            margin: 20px 0;
+            color: var(--dark-color);
+        }
+        
+        /* Maintain layout when hidden */
+        #research-categories,
+        #department-selection,
+        #research-data {
+            min-height: 200px; /* Reserve space to prevent layout shift */
+            width: 100%; /* Ensure full grid width */
+        }
+        
+        /* Override inline display: none for hidden sections */
+        #research-categories[style*="display: none"],
+        #department-selection[style*="display: none"],
+        #research-data[style*="display: none"] {
+            visibility: hidden; /* Keep space in layout */
+            position: absolute; /* Remove from flow without collapsing */
+            opacity: 0; /* Smooth visual transition */
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+        
+        /* Ensure visible sections are properly displayed */
+        #research-categories:not([style*="display: none"]),
+        #department-selection:not([style*="display: none"]),
+        #research-data:not([style*="display: none"]) {
+            visibility: visible;
+            position: relative; /* Restore normal flow */
+            opacity: 1;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .category-buttons,
+            .department-grid {
+                grid-template-columns: 1fr;
+                min-height: 80px; /* Adjust for mobile */
+            }
+        
+            .category-btn,
+            .department-btn {
+                padding: 12px;
+            }
+        }
+        
+        /* Gallery Section Styling */
+        #gallery {
+            padding: 30px;
+            background-color: #f9f9f9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        #gallery h2 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        #gallery p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        /* Department Cards */
+        .department-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .department-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .department-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .department-card h3 {
+            font-size: 1.2rem;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+        }
+        
+        .department-card .btn {
+            width: 100%;
+            max-width: 150px;
+        }
+        
+        /* Photo Grid */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .photo-grid img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+        
+        .photo-grid img:hover {
+            transform: scale(1.05);
+        }
+        
+        .photo-caption {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Back Button */
+        .back-btn {
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* View States */
+        .gallery-view {
+            display: none;
+        }
+        
+        .gallery-view.active {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+                <img src="pes.png" alt="College Logo" class="sidebar-logo">
+                <span>PESITM COLLEGE</span>
+                <div>
+                    <div class="sidebar-header">
+                    <span>Principal Dashboard<span>
+                    <p>Welcome, Dr. Robert Chen</p>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="showTab('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard Overview</span>
+                </div>
+                <div class="menu-item" onclick="showTab('announcements')">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Special Announcements</span>
+                </div>
+                <div class="menu-item" onclick="showTab('events')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Upcoming Events</span>
+                </div>
+                <div class="menu-item" onclick="showTab('departments')">
+                    <i class="fas fa-building"></i>
+                    <span>Department Metrics</span>
+                </div>
+                <div class="menu-item" onclick="showTab('research')">
+                    <i class="fas fa-flask"></i>
+                    <span>Institute R&D</span>
+                </div>
+                <div class="menu-item" onclick="showTab('gallery')">
+                    <i class="fas fa-images"></i>
+                    <span>Gallery</span>
+                </div>
+                <div class="menu-item" onclick="showTab('newsletters')">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Newsletters</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="header">
+                <div class="college-logo">
+                </div>
+                <div class="user-actions">
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <h1 class="dashboard-heading">Principal Dashboard</h1>
+                    <p class="dashboard-subheading">Comprehensive overview of institute performance and activities</p>
+                    
+                    <!-- Quick Stats -->
+                    <div class="card-grid">
+                        <div class="card stats-card" onclick="openBranchModal()" style="cursor: pointer;">
+                            <i class="fas fa-users" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">1,856</div>
+                            <div class="stats-label">Total Students</div>
+                        </div>
+                        <div class="card stats-card" onclick="openFacultyModal()" style="cursor: pointer;">
+                            <i class="fas fa-user-friends" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">View</div>
+                            <div class="stats-label">Faculty Members</div>
+                        </div>
+                        <div class="card stats-card" onclick="openDepartmentModal()" style="cursor: pointer;">
+                            <i class="fas fa-building" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">8</div>
+                            <div class="stats-label">Departments</div>
+                        </div>
+                        <div class="card stats-card">
+                            <i class="fas fa-graduation-cap" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">92%</div>
+                            <div class="stats-label">Placement Rate</div>
+                        </div>
+                        <div class="card stats-card" onclick="openTimetableModal()" style="cursor: pointer;">
+                            <i class="fas fa-calendar-alt" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">View</div>
+                            <div class="stats-label">Timetable</div>
+                        </div>
+                    </div>
+                    <!-- Institute Performance -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Institute Performance Overview</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="instituteChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    
+                    <!-- Faculty Modal -->
+                    <div id="facultyModal" class="modal">
+                        <div class="modal-content" style="max-width: 1000px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h2>Faculty Members by Department</h2>
+                                <span class="close-modal" style="cursor: pointer; font-size: 28px;" onclick="closeFacultyModal()">×</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="facultyBranchSelect">Select Department:</label>
+                                <select id="facultyBranchSelect" class="form-control" onchange="loadFacultyDetails()">
+                                    <option value="">-- Select Department --</option>
+                                    <option value="CS">Computer Science (CS)</option>
+                                    <option value="IS">Information Science (IS)</option>
+                                    <option value="AIML">AI & ML (AIML)</option>
+                                    <option value="CSDS">CS & Data Science (CSDS)</option>
+                                    <option value="CSD">Computer Science Design (CSD)</option>
+                                    <option value="EC">Electronics & Communication (EC)</option>
+                                    <option value="ME">Mechanical Engineering (ME)</option>
+                                    <option value="EEE">Electrical & Electronics (EEE)</option>
+                                </select>
+                            </div>
+                            <div class="table-responsive" id="facultyDetailsContainer"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Timetable Modal -->
+                    <div id="timetableModal" class="modal">
+                        <div class="modal-content" style="max-width: 1100px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h2>Branch and Semester-wise Timetable</h2>
+                                <span class="close-modal" style="cursor: pointer; font-size: 28px;" onclick="closeTimetableModal()">×</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="branchSelect">Select Branch:</label>
+                                <select id="branchSelect" class="form-control" onchange="showSemesterDropdown()">
+                                    <option value="">-- Select Branch --</option>
+                                    <option value="CS">Computer Science (CS)</option>
+                                    <option value="IS">Information Science (IS)</option>
+                                    <option value="AIML">AI & ML (AIML)</option>
+                                    <option value="CSDS">CS & Data Science (CSDS)</option>
+                                    <option value="CSD">Computer Science Design (CSD)</option>
+                                    <option value="EC">Electronics & Communication (EC)</option>
+                                    <option value="ME">Mechanical Engineering (ME)</option>
+                                    <option value="EEE">Electrical & Electronics (EEE)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="semesterSection, " id="semesterSection" style="display:none;">
+                                <select id="semesterSelect" class="form-control" onchange="loadBranchSemTimetable()">
+                                    <option value="">-- Select Semester --</option>
+                                    <option value="1">1st Sem</option>
+                                    <option value="2">2nd Sem</option>
+                                    < assign: 2nd Sem</option>
+                                    <option value="3">3rd Sem</option>
+                                    <option value="4">4th Sem</option>
+                                    <option value="5">5th Sem</option>
+                                    <option value="6">6th Sem</option>
+                                    <option value="7">7th Sem</option>
+                                    <option value="8">8th Sem</option>
+                                </select>
+                            </div>
+                            <div class="table-responsive" id="branchSemTimetableContainer"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Branch Modal -->
+                    <div id="branchModal" class="modal">
+                        <div class="modal-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h2>Branch-wise Student Distribution</h2>
+                                <span class="close-modal" style="cursor: pointer; font-size: 24px;">×</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Branch</th>
+                                            <th>Approved Students</th>
+                                            <th>Allocated Students</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Computer Science</td>
+                                            <td>400</td>
+                                            <td>380</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Electronics & Communication</td>
+                                            <td>350</td>
+                                            <td>340</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mechanical Engineering</td>
+                                            <td>300</td>
+                                            <td>290</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Electrical Engineering</td>
+                                            <td>250</td>
+                                            <td>240</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Information Science</td>
+                                            <td>250</td>
+                                            <td>240</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Civil Engineering</td>
+                                            <td>200</td>
+                                            <td>190</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Artificial Intelligence & Machine Learning</td>
+                                            <td>150</td>
+                                            <td>140</td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total</strong></td>
+                                            <td><strong>1856</strong></td>
+                                            <td><strong>1820</strong></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Department Modal -->
+                    <div id="departmentModal" class="modal">
+                        <div class="modal-content" style="max-width: 900px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h2>Department Details</h2>
+                                <span class="close-modal" style="cursor: pointer; font-size: 24px;">×</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Department</th>
+                                            <th>HOD Name</th>
+                                            <th>Student Count</th>
+                                            <th>Faculty Count</th>
+                                            <th>Email ID</th>
+                                            <th>Phone Number</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Computer Science</td>
+                                            <td>Dr. Anil Kumar</td>
+                                            <td>380</td>
+                                            <td>20</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a2b24232664213f272b380a3a2f39233e27642f2e3f">[email&#160;protected]</a></td>
+                                            <td>+91-9876543210</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Electronics & Communication</td>
+                                            <td>Dr. Priya Sharma</td>
+                                            <td>340</td>
+                                            <td>18</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5a2a2833233b7429323b28373b1a2a3f29332e37743f3e2f">[email&#160;protected]</a></td>
+                                            <td>+91-8765432109</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Mechanical Engineering</td>
+                                            <td>Dr. Rajesh Gupta</td>
+                                            <td>290</td>
+                                            <td>16</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7b091a111e0813551c0e0b0f1a3b0b1e08120f16551e1f0e">[email&#160;protected]</a></td>
+                                            <td>+91-7654321098</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Electrical Engineering</td>
+                                            <td>Dr. Meena Patel</td>
+                                            <td>240</td>
+                                            <td>14</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2bfb7b7bcb3fca2b3a6b7be92a2b7a1bba6bffcb7b6a7">[email&#160;protected]</a></td>
+                                            <td>+91-6543210987</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Information Science</td>
+                                            <td>Dr. Sanjay Rao</td>
+                                            <td>240</td>
+                                            <td>14</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3e4d5f50545f47104c5f517e4e5b4d574a53105b5a4b">[email&#160;protected]</a></td>
+                                            <td>+91-5432109876</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Civil Engineering</td>
+                                            <td>Dr. Lakshmi Nair</td>
+                                            <td>190</td>
+                                            <td>12</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="58f479736b707571367679716a58687d6b716c75367d7c6d">[email&#160;protected]</a></td>
+                                            <td>+91-4321098765</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Artificial Intelligence & Machine Learning</td>
+                                            <td>Dr. Vikram Singh</td>
+                                            <td>140</td>
+                                            <td>10</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="46706f6d74676b28756f68616e467663756f726b28636273">[email&#160;protected]</a></td>
+                                            <td>+91-3210987654</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Chemical Engineering</td>
+                                            <td>Dr. Sunita Desai</td>
+                                            <td>100</td>
+                                            <td>10</td>
+                                            <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4d7d1cacdd0c58ac0c1d7c5cde4d4c1d7cdd0c98ac1c0d1">[email&#160;protected]</a></td>
+                                            <td>+91-2109876543</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Announcements Tab -->
+                <div id="announcements" class="tab-content">
+                    <h1 class="dashboard-heading">Special Announcements</h1>
+                    <p class="dashboard-subheading">Manage and publish institute-wide announcements</p>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Create New Announcement</h3>
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="card-body">
+                            <form id="announcementForm" onsubmit="publishAnnouncement(event)">
+                                <div class="form-group">
+                                    <label for="announcement-title">Title</label>
+                                    <input type="text" id="announcement-title" class="form-control" placeholder="Enter announcement title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="announcement-content">Content</label>
+                                    <textarea id="announcement-content" class="form-control" placeholder="Enter announcement details" required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="announcement-date">Publication Date</label>
+                                    <input type="date" id="announcement-date" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Publish Announcement</button>
+                                <button type="button" class="btn btn-secondary" onclick="saveDraft()">Save as Draft</button>
+                                <button type="button" class="btn btn-primary" style="margin-top: 10px;" onclick="sendEmail()">Send Email to HODs</button>
+                                <button type="button" class="btn btn-secondary" style="margin-top: 10px;" onclick="sendWhatsApp()">Send WhatsApp to HODs</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            < stel: Announcement History</h3>
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table" id="announcement-history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Semester Exam Schedule</td>
+                                            <td>Oct 15, 2024</td>
+                                            <td><span class="badge badge-success">Published</span></td>
+                                            <td class="action-buttons">
+                                                <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upcoming Events Tab -->
+                <div id="events" class="tab-content">
+                    <h1 class="dashboard-heading">Upcoming Events</h1>
+                    <p class="dashboard-subheading">View upcoming events across all departments</p>
+                
+                    <div class="card-grid" style="grid-template-columns: repeat(4, 1fr);">
+                        <!-- Department Cards -->
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Computer Science</h3>
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('CS')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Electronics & Communication</h3>
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('EC')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Mechanical Engineering</h3>
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('ME')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Electrical Engineering</h3>
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('EEE')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Information Science</h3>
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('IS')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Civil Engineering</h3>
+                                <i class="fas fa-hard-hat"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('CE')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>AI & Machine Learning</h3>
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('AIML')">View Events</button>
+                            </div>
+                        </div>
+                        <div class="card department-card">
+                            <div class="card-header">
+                                <h3>Chemical Engineering</h3>
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary" onclick="openEventsModal('CHE')">View Events</button>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Events Modal -->
+                    <div id="eventsModal" class="modal" style="display: none;">
+                        <div class="modal-content" style="background-color: white; margin: 5% auto; padding: 25px; width: 95%; max-width: 900px; border-radius: 10px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <h2 id="modalDepartmentName">Department Events</h2>
+                                <span class="close-modal" style="cursor: pointer; font-size: 28px;" onclick="closeEventsModal()">×</span>
+                            </div>
+                            <div class="table-responsive" id="eventsDetailsContainer">
+                                <!-- Event details will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Department Metrics Tab -->
+                <div id="departments" class="tab-content">
+                    <h1 class="dashboard-heading">Department Metrics</h1>
+                    <p class="dashboard-subheading">Performance metrics by department</p>
+                    <div class="tabs">
+                        <div class="tab active" onclick="showDepartmentTab('syllabus-coverage')">Syllabus Coverage</div>
+                        <div class="tab" onclick="showDepartmentTab('achievements')">Achievements</div>
+                        <div class="tab" onclick="showDepartmentTab('faculty-performance')">Faculty Performance</div>
+                        <div class="tab" onclick="showDepartmentTab('student-performance')">Student Performance</div>
+                    </div>
+                    <div id="syllabus-coverage" class="tab-pane active">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Syllabus Coverage</h3>
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="syllabusBranchSelect">Select Department:</label>
+                                    <select id="syllabusBranchSelect" class="form-control" onchange="loadSyllabusDetails()">
+                                        <option value="">-- Select Department --</option>
+                                        <option value="CS">Computer Science (CS)</option>
+                                        <option value="IS">Information Science (IS)</option>
+                                        <option value="AIML">AI & ML (AIML)</option>
+                                        <option value="CSDS">CS & Data Science (CSDS)</option>
+                                        <option value="CSD">Computer Science Design (CSD)</option>
+                                        <option value="EC">Electronics & Communication (EC)</option>
+                                        <option value="ME">Mechanical Engineering (ME)</option>
+                                        <option value="EEE">Electrical & Electronics (EEE)</option>
+                                    </select>
+                                </div>
+                                <div class="table-responsive" id="syllabusDetailsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="achievements" class="tab-pane">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Department Achievements</h3>
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="achievementsBranchSelect">Select Department:</label>
+                                    <select id="achievementsBranchSelect" class="form-control" onchange="loadAchievementsDetails()">
+                                        <option value="">-- Select Department --</option>
+                                        <option value="CS">Computer Science (CS)</option>
+                                        <option value="IS">Information Science (IS)</option>
+                                        <option value="AIML">AI & ML (AIML)</option>
+                                        <option value="CSDS">CS & Data Science (CSDS)</option>
+                                        <option value="CSD">Computer Science Design (CSD)</option>
+                                        <option value="EC">Electronics & Communication (EC)</option>
+                                        <option value="ME">Mechanical Engineering (ME)</option>
+                                        <option value="EEE">Electrical & Electronics (EEE)</option>
+                                    </select>
+                                </div>
+                                <div id="achievementsDetailsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="faculty-performance" class="tab-pane">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Faculty Performance</h3>
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="facultyBranchSelectPerformance">Select Department:</label>
+                                    <select id="facultyBranchSelectPerformance" class="form-control" onchange="loadFacultyPerformanceDetails()">
+                                        <option value="">-- Select Department --</option>
+                                        <option value="CS">Computer Science (CS)</option>
+                                        <option value="IS">Information Science (IS)</option>
+                                        <option value="AIML">AI & ML (AIML)</option>
+                                        <option value="CSDS">CS & Data Science (CSDS)</option>
+                                        <option value="CSD">Computer Science Design (CSD)</option>
+                                        <option value="EC">Electronics & Communication (EC)</option>
+                                        <option value="ME">Mechanical Engineering (ME)</option>
+                                        <option value="EEE">Electrical & Electronics (EEE)</option>
+                                    </select>
+                                </div>
+                                <div class="table-responsive" id="facultyPerformanceDetailsContainer"></div>
+                                <div class="chart-container">
+                                    <canvas id="facultyPerformanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="student-performance" class="tab-pane">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Student Performance</h3>
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="studentBranchSelect">Select Department:</label>
+                                    <select id="studentBranchSelect" class="form-control" onchange="loadStudentPerformanceDetails()">
+                                        <option value="">-- Select Department --</option>
+                                        <option value="CS">Computer Science (CS)</option>
+                                        <option value="IS">Information Science (IS)</option>
+                                        <option value="AIML">AI & ML (AIML)</option>
+                                        <option value="CSDS">CS & Data Science (CSDS)</option>
+                                        <option value="CSD">Computer Science Design (CSD)</option>
+                                        <option value="EC">Electronics & Communication (EC)</option>
+                                        <option value="ME">Mechanical Engineering (ME)</option>
+                                        <option value="EEE">Electrical & Electronics (EEE)</option>
+                                    </select>
+                                </div>
+                                <div class="table-responsive" id="studentPerformanceDetailsContainer"></div>
+                                <div class="chart-container">
+                                    <canvas id="studentPerformanceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Institute R&D Tab -->
+                <div id="research" class="tab-content">
+                    <h1 class="dashboard-heading">Institute R&D</h1>
+                    <p class="dashboard-subheading">Research and development activities across departments</p>
+                
+                    <!-- Research Categories -->
+                    <div id="research-categories">
+                        <h3>Research Categories</h3>
+                        <div class="category-buttons">
+                            <button class="category-btn" data-category="journals"><i class="fas fa-book"></i> Journals</button>
+                            <button class="category-btn" data-category="international-conference"><i class="fas fa-globe"></i> International Conference</button>
+                            <button class="category-btn" data-category="national-conference"><i class="fas fa-flag"></i> National Conference</button>
+                            <button class="category-btn" data-category="book-chapter"><i class="fas fa-book-open"></i> Book Chapter</button>
+                            <button class="category-btn" data-category="book-edited"><i class="fas fa-edit"></i> Book Edited</button>
+                            <button class="category-btn" data-category="patents"><i class="fas fa-lightbulb"></i> Patents</button>
+                        </div>
+                    </div>
+                
+                    <!-- Department Selection -->
+                    <div id="department-selection" style="display: none;">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Back to Categories</button>
+                        <h3>Select Department</h3>
+                        <div class="department-grid">
+                            <button class="department-btn" data-department="aiml"><i class="fas fa-robot"></i> AIML</button>
+                            <button class="department-btn" data-department="cse"><i class="fas fa-laptop-code"></i> CSE</button>
+                            <button class="department-btn" data-department="csd"><i class="fas fa-database"></i> CSD</button>
+                            <button class="department-btn" data-department="csds"><i class="fas fa-server"></i> CSDS</button>
+                            <button class="department-btn" data-department="eee"><i class="fas fa-bolt"></i> EEE</button>
+                            <button class="department-btn" data-department="ece"><i class="fas fa-microchip"></i> ECE</button>
+                            <button class="department-btn" data-department="ce"><i class="fas fa-cogs"></i> CE</button>
+                            <button class="department-btn" data-department="civil"><i class="fas fa-hard-hat"></i> Civil</button>
+                        </div>
+                    </div>
+                
+                    <!-- Research Data -->
+                    <div id="research-data" style="display: none;">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Back to Departments</button>
+                        <div id="data-content"></div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Tab -->
+                <div id="gallery" class="tab-content">
+                    <div id="departments-view" class="gallery-view active">
+                        <h1 class="dashboard-heading">Gallery</h1>
+                        <p class="dashboard-subheading">Browse department-wise photo galleries</p>
+                        <div class="department-grid">
+                            <div class="department-card" data-dept="cse">
+                                <h3>Computer Science & Engineering</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="ise">
+                                <h3>Information Science & Engineering</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="ece">
+                                <h3>Electronics & Communication</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="me">
+                                <h3>Mechanical Engineering</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="ce">
+                                <h3>Civil Engineering</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="eee">
+                                <h3>Electrical & Electronics</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="che">
+                                <h3>Chemical Engineering</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                            <div class="department-card" data-dept="bt">
+                                <h3>Biotechnology</h3>
+                                <button class="btn btn-primary view-photos">View Photos</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="photos-view" class="gallery-view">
+                        <button class="btn btn-secondary back-btn"><i class="fas fa-arrow-left"></i> Back to Departments</button>
+                        <h2 id="department-title"></h2>
+                        <div class="photo-grid" id="photo-grid"></div>
+                    </div>
+                </div>
+                
+                <!-- Newsletters Tab -->
+                <div id="newsletters" class="tab-content">
+                    <h1 class="dashboard-heading">Newsletters</h1>
+                    <p class="dashboard-subheading">Upload and manage institute newsletters</p>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Upload Newsletter</h3>
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="card-body">
+                            <form id="newsletterForm">
+                                <div class="form-group">
+                                    <label for="newsletterTitle">Newsletter Title</label>
+                                    <input type="text" id="newsletterTitle" class="form-control" placeholder="Enter newsletter title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newsletterDate">Publication Date</label>
+                                    <input type="date" id="newsletterDate" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newsletterFile">Upload File</label>
+                                    <input type="file" id="newsletterFile" class="form-control" accept=".pdf" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Upload Newsletter</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Newsletter Archive</h3>
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <span class="date-label">Sep 2024</span>
+                                <span>Monthly Newsletter</span>
+                                <a href="#" class="btn btn-sm btn-primary" download>Download</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js"></script>
+    <script>
+        // Tab Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.menu-item[onclick="showTab('${tabId}')"]`).classList.add('active');
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+        
+        // Department Tab Navigation
+        function showDepartmentTab(tabId) {
+            document.querySelectorAll('.tab-pane').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick="showDepartmentTab('${tabId}')"]`).classList.add('active');
+        }
+        
+        // Modal Functions
+        function openBranchModal() {
+            document.getElementById('branchModal').style.display = 'block';
+        }
+        
+        function openFacultyModal() {
+            document.getElementById('facultyModal').style.display = 'block';
+        }
+        
+        function openDepartmentModal() {
+            document.getElementById('departmentModal').style.display = 'block';
+        }
+        
+        function openTimetableModal() {
+            document.getElementById('timetableModal').style.display = 'block';
+        }
+        
+        function closeFacultyModal() {
+            document.getElementById('facultyModal').style.display = 'none';
+        }
+        
+        function closeTimetableModal() {
+            document.getElementById('timetableModal').style.display = 'none';
+        }
+        
+        document.querySelectorAll('.close-modal').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                this.closest('.modal').style.display = 'none';
+            });
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        });
+        
+        // Faculty Details
+        const facultyData = {
+            CS: [
+                { name: "Dr. Anil Kumar", designation: "Professor", email: "anil@pesitm.edu" },
+                { name: "Ms. Priya Sharma", designation: "Associate Professor", email: "priya@pesitm.edu" }
+            ],
+            IS: [
+                { name: "Dr. Sanjay Rao", designation: "Professor", email: "sanjay@pesitm.edu" }
+            ],
+            AIML: [
+                { name: "Dr. Vikram Singh", designation: "Professor", email: "vikram@pesitm.edu" }
+            ],
+            CSDS: [
+                { name: "Dr. Sunita Desai", designation: "Professor", email: "sunita@pesitm.edu" }
+            ],
+            CSD: [
+                { name: "Dr. Rajesh Gupta", designation: "Professor", email: "rajesh@pesitm.edu" }
+            ],
+            EC: [
+                { name: "Dr. Meena Patel", designation: "Professor", email: "meena@pesitm.edu" }
+            ],
+            ME: [
+                { name: "Dr. Lakshmi Nair", designation: "Professor", email: "lakshmi@pesitm.edu" }
+            ],
+            EEE: [
+                { name: "Dr. Arjun Reddy", designation: "Associate Professor", email: "arjun@pesitm.edu" }
+            ]
+        };
+        
+        function loadFacultyDetails() {
+            const selectedBranch = document.getElementById('facultyBranchSelect').value;
+            const container = document.getElementById('facultyDetailsContainer');
+            
+            if (selectedBranch && facultyData[selectedBranch]) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Designation</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                facultyData[selectedBranch].forEach(faculty => {
+                    tableHTML += `
+                        <tr>
+                            <td>${faculty.name}</td>
+                            <td>${faculty.designation}</td>
+                            <td>${faculty.email}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No faculty data available for this department.</p>`;
+            }
+        }
+        
+        // Timetable Details
+        const timetableData = {
+            CS: {
+                1: [
+                    { day: "Monday", periods: ["Maths (9-10)", "Physics (10-11)", "C Programming (11-12)", "Lunch (12-1)", "Lab (1-3)"] },
+                    { day: "Tuesday", periods: ["Chemistry (9-10)", "Maths (10-11)", "English (11-12)", "Lunch (12-1)", "Lab (1-3)"] }
+                ],
+                3: [
+                    { day: "Monday", periods: ["DS (9-10)", "OOP (10-11)", "DBMS (11-12)", "Lunch (12-1)", "Lab (1-3)"] }
+                ]
+            },
+            IS: {
+                1: [
+                    { day: "Monday", periods: ["Maths (9-10)", "Physics (10-11)", "C Programming (11-12)", "Lunch (12-1)", "Lab (1-3)"] }
+                ]
+            }
+        };
+        
+        function showSemesterDropdown() {
+            const branch = document.getElementById('branchSelect').value;
+            const semesterSection = document.getElementById('semesterSection');
+            if (branch) {
+                semesterSection.style.display = 'block';
+            } else {
+                semesterSection.style.display = 'none';
+                document.getElementById('branchSemTimetableContainer').innerHTML = '';
+            }
+        }
+        
+        function loadBranchSemTimetable() {
+            const branch = document.getElementById('branchSelect').value;
+            const semester = document.getElementById('semesterSelect').value;
+            const container = document.getElementById('branchSemTimetableContainer');
+            
+            if (branch && semester && timetableData[branch] && timetableData[branch][semester]) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Day</th>
+                                <th>9:00-10:00</th>
+                                <th>10:00-11:00</th>
+                                <th>11:00-12:00</th>
+                                <th>12:00-1:00</th>
+                                <th>1:00-3:00</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                timetableData[branch][semester].forEach(day => {
+                    tableHTML += `
+                        <tr>
+                            <td>${day.day}</td>
+                            ${day.periods.map(period => `<td>${period}</td>`).join('')}
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No timetable available for this branch and semester.</p>`;
+            }
+        }
+        
+        // Syllabus Coverage Data
+        const syllabusData = {
+            CS: [
+                { subject: "Data Structures", coverage: 80, status: "In Progress" },
+                { subject: "OOP", coverage: 90, status: "Completed" }
+            ],
+            IS: [
+                { subject: "Database Systems", coverage: 85, status: "In Progress" }
+            ],
+            AIML: [
+                { subject: "Machine Learning", coverage: 75, status: "In Progress" }
+            ],
+            CSDS: [
+                { subject: "Big Data", coverage: 70, status: "In Progress" }
+            ],
+            CSD: [
+                { subject: "UI/UX Design", coverage: 80, status: "In Progress" }
+            ],
+            EC: [
+                { subject: "Digital Electronics", coverage: 85, status: "In Progress" }
+            ],
+            ME: [
+                { subject: "Thermodynamics", coverage: 90, status: "Completed" }
+            ],
+            EEE: [
+                { subject: "Power Systems", coverage: 80, status: "In Progress" }
+            ]
+        };
+        
+        function loadSyllabusDetails() {
+            const selectedBranch = document.getElementById('syllabusBranchSelect').value;
+            const container = document.getElementById('syllabusDetailsContainer');
+            
+            if (selectedBranch && syllabusData[selectedBranch]) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Coverage (%)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                syllabusData[selectedBranch].forEach(subject => {
+                    tableHTML += `
+                        <tr>
+                            <td>${subject.subject}</td>
+                            <td>${subject.coverage}</td>
+                            <td><span class="badge badge-${subject.status === 'Completed' ? 'success' : 'warning'}">${subject.status}</span></td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No syllabus data available for this department.</p>`;
+            }
+        }
+        
+        // Achievements Data
+        const achievementsData = {
+            CS: [
+                { title: "Best Project Award", description: "AI-based Healthcare System", date: "2024-09-15" },
+                { title: "Hackathon Winner", description: "Smart City Solution", date: "2024-08-10" }
+            ],
+            IS: [
+                { title: "Best Paper Award", description: "Blockchain Security", date: "2024-07-20" }
+            ],
+            AIML: [
+                { title: "Innovation Award", description: "Predictive Maintenance System", date: "2024-06-05" }
+            ],
+            CSDS: [
+                { title: "Data Science Award", description: "Real-time Analytics Platform", date: "2024-05-12" }
+            ],
+            CSD: [
+                { title: "Design Excellence", description: "User-Centric Mobile App", date: "2024-04-18" }
+            ],
+            EC: [
+                { title: "Circuit Design Award", description: "Low-Power IoT Device", date: "2024-03-25" }
+            ],
+            ME: [
+                { title: "Robotics Competition", description: "Autonomous Robot", date: "2024-02-15" }
+            ],
+            EEE: [
+                { title: "Energy Innovation Award", description: "Smart Grid Solution", date: "2024-01-30" }
+            ]
+        };
+
+        function loadAchievementsDetails() {
+            const selectedBranch = document.getElementById('achievementsBranchSelect').value;
+            const container = document.getElementById('achievementsDetailsContainer');
+
+            if (selectedBranch && achievementsData[selectedBranch]) {
+                let html = `<div class="achievement-list">`;
+                achievementsData[selectedBranch].forEach(achievement => {
+                    html += `
+                        <div class="list-item">
+                            <div>
+                                <strong>${achievement.title}</strong>
+                                <p>${achievement.description}</p>
+                            </div>
+                            <span class="date-label">${achievement.date}</span>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No achievements data available for this department.</p>`;
+            }
+        }
+
+        // Faculty Performance Data
+        const facultyPerformanceData = {
+            CS: [
+                { name: "Dr. Anil Kumar", rating: 4.8, publications: 12, projects: 3 },
+                { name: "Ms. Priya Sharma", rating: 4.5, publications: 8, projects: 2 }
+            ],
+            IS: [
+                { name: "Dr. Sanjay Rao", rating: 4.7, publications: 10, projects: 2 }
+            ],
+            AIML: [
+                { name: "Dr. Vikram Singh", rating: 4.9, publications: 15, projects: 4 }
+            ],
+            CSDS: [
+                { name: "Dr. Sunita Desai", rating: 4.6, publications: 9, projects: 3 }
+            ],
+            CSD: [
+                { name: "Dr. Rajesh Gupta", rating: 4.4, publications: 7, projects: 2 }
+            ],
+            EC: [
+                { name: "Dr. Meena Patel", rating: 4.7, publications: 11, projects: 3 }
+            ],
+            ME: [
+                { name: "Dr. Lakshmi Nair", rating: 4.5, publications: 8, projects: 2 }
+            ],
+            EEE: [
+                { name: "Dr. Arjun Reddy", rating: 4.6, publications: 10, projects: 3 }
+            ]
+        };
+
+        let facultyChartInstance = null;
+
+        function loadFacultyPerformanceDetails() {
+            const selectedBranch = document.getElementById('facultyBranchSelectPerformance').value;
+            const container = document.getElementById('facultyPerformanceDetailsContainer');
+            const canvas = document.getElementById('facultyPerformanceChart').getContext('2d');
+
+            if (selectedBranch && facultyPerformanceData[selectedBranch]) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Rating</th>
+                                <th>Publications</th>
+                                <th>Projects</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                facultyPerformanceData[selectedBranch].forEach(faculty => {
+                    tableHTML += `
+                        <tr>
+                            <td>${faculty.name}</td>
+                            <td>${faculty.rating}</td>
+                            <td>${faculty.publications}</td>
+                            <td>${faculty.projects}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+
+                // Destroy existing chart if it exists
+                if (facultyChartInstance) {
+                    facultyChartInstance.destroy();
+                }
+
+                // Create new chart
+                facultyChartInstance = new Chart(canvas, {
+                    type: 'bar',
+                    data: {
+                        labels: facultyPerformanceData[selectedBranch].map(f => f.name),
+                        datasets: [
+                            {
+                                label: 'Rating',
+                                data: facultyPerformanceData[selectedBranch].map(f => f.rating),
+                                backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                                borderColor: 'rgba(52, 152, 219, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Publications',
+                                data: facultyPerformanceData[selectedBranch].map(f => f.publications),
+                                backgroundColor: 'rgba(46, 204, 113, 0.6)',
+                                borderColor: 'rgba(46, 204, 113, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Value'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No faculty performance data available for this department.</p>`;
+                if (facultyChartInstance) {
+                    facultyChartInstance.destroy();
+                    facultyChartInstance = null;
+                }
+            }
+        }
+
+        // Student Performance Data
+        const studentPerformanceData = {
+            CS: [
+                { semester: "1st", avgGPA: 8.2, passRate: 95 },
+                { semester: "2nd", avgGPA: 8.0, passRate: 93 }
+            ],
+            IS: [
+                { semester: "1st", avgGPA: 8.1, passRate: 94 }
+            ],
+            AIML: [
+                { semester: "1st", avgGPA: 8.3, passRate: 96 }
+            ],
+            CSDS: [
+                { semester: "1st", avgGPA: 8.0, passRate: 92 }
+            ],
+            CSD: [
+                { semester: "1st", avgGPA: 8.2, passRate: 94 }
+            ],
+            EC: [
+                { semester: "1st", avgGPA: 7.9, passRate: 91 }
+            ],
+            ME: [
+                { semester: "1st", avgGPA: 7.8, passRate: 90 }
+            ],
+            EEE: [
+                { semester: "1st", avgGPA: 8.0, passRate: 93 }
+            ]
+        };
+
+        let studentChartInstance = null;
+
+        function loadStudentPerformanceDetails() {
+            const selectedBranch = document.getElementById('studentBranchSelect').value;
+            const container = document.getElementById('studentPerformanceDetailsContainer');
+            const canvas = document.getElementById('studentPerformanceChart').getContext('2d');
+
+            if (selectedBranch && studentPerformanceData[selectedBranch]) {
+                let tableHTML = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Semester</th>
+                                <th>Average GPA</th>
+                                <th>Pass Rate (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                studentPerformanceData[selectedBranch].forEach(sem => {
+                    tableHTML += `
+                        <tr>
+                            <td>${sem.semester}</td>
+                            <td>${sem.avgGPA}</td>
+                            <td>${sem.passRate}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+
+                // Destroy existing chart if it exists
+                if (studentChartInstance) {
+                    studentChartInstance.destroy();
+                }
+
+                // Create new chart
+                studentChartInstance = new Chart(canvas, {
+                    type: 'line',
+                    data: {
+                        labels: studentPerformanceData[selectedBranch].map(s => s.semester),
+                        datasets: [
+                            {
+                                label: 'Average GPA',
+                                data: studentPerformanceData[selectedBranch].map(s => s.avgGPA),
+                                borderColor: 'rgba(52, 152, 219, 1)',
+                                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                                fill: true
+                            },
+                            {
+                                label: 'Pass Rate (%)',
+                                data: studentPerformanceData[selectedBranch].map(s => s.passRate),
+                                borderColor: 'rgba(46, 204, 113, 1)',
+                                backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Value'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        }
+                    }
+                });
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No student performance data available for this department.</p>`;
+                if (studentChartInstance) {
+                    studentChartInstance.destroy();
+                    studentChartInstance = null;
+                }
+            }
+        }
+
+        // Event Details
+        const eventData = {
+            CS: [
+                { title: "Tech Fest 2024", date: "2024-11-10", time: "10:00 AM", venue: "Main Auditorium", status: "Upcoming" },
+                { title: "Coding Workshop", date: "2024-10-20", time: "2:00 PM", venue: "CS Lab", status: "Completed" }
+            ],
+            EC: [
+                { title: "Circuit Design Workshop", date: "2024-11-15", time: "11:00 AM", venue: "EC Lab", status: "Upcoming" }
+            ],
+            ME: [
+                { title: "Robotics Competition", date: "2024-12-01", time: "9:00 AM", venue: "Workshop", status: "Upcoming" }
+            ],
+            EEE: [
+                { title: "Power Systems Seminar", date: "2024-11-05", time: "1:00 PM", venue: "EEE Seminar Hall", status: "Upcoming" }
+            ],
+            IS: [
+                { title: "Data Science Bootcamp", date: "2024-11-20", time: "10:00 AM", venue: "IS Lab", status: "Upcoming" }
+            ],
+            CE: [
+                { title: "Structural Design Workshop", date: "2024-11-25", time: "11:00 AM", venue: "CE Lab", status: "Upcoming" }
+            ],
+            AIML: [
+                { title: "AI Symposium", date: "2024-12-10", time: "9:00 AM", venue: "Main Auditorium", status: "Upcoming" }
+            ],
+            CHE: [
+                { title: "Chemical Process Seminar", date: "2024-11-30", time: "2:00 PM", venue: "CHE Seminar Hall", status: "Upcoming" }
+            ]
+        };
+
+        function openEventsModal(department) {
+            const modal = document.getElementById('eventsModal');
+            const modalTitle = document.getElementById('modalDepartmentName');
+            const container = document.getElementById('eventsDetailsContainer');
+
+            modalTitle.textContent = `${department} Events`;
+            if (eventData[department]) {
+                let tableHTML = `
+                    <table class="event-table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Venue</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                eventData[department].forEach(event => {
+                    tableHTML += `
+                        <tr>
+                            <td>${event.title}</td>
+                            <td>${event.date}</td>
+                            <td>${event.time}</td>
+                            <td>${event.venue}</td>
+                            <td><span class="badge badge-${event.status === 'Upcoming' ? 'warning' : 'success'}">${event.status}</span></td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                container.innerHTML = tableHTML;
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No events available for this department.</p>`;
+            }
+            modal.style.display = 'block';
+        }
+
+        function closeEventsModal() {
+            document.getElementById('eventsModal').style.display = 'none';
+        }
+
+        // Announcement Functions
+        function publishAnnouncement(event) {
+            event.preventDefault();
+            const title = document.getElementById('announcement-title').value;
+            const content = document.getElementById('announcement-content').value;
+            const date = document.getElementById('announcement-date').value;
+
+            const historyTable = document.getElementById('announcement-history-table').querySelector('tbody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${title}</td>
+                <td>${date}</td>
+                <td><span class="badge badge-success">Published</span></td>
+                <td class="action-buttons">
+                    <button class="btn btn-sm btn-primary"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            historyTable.prepend(newRow);
+            document.getElementById('announcementForm').reset();
+            alert('Announcement published successfully!');
+        }
+
+        function saveDraft() {
+            alert('Announcement saved as draft!');
+        }
+
+        function sendEmail() {
+            alert('Email sent to HODs!');
+        }
+
+        function sendWhatsApp() {
+            alert('WhatsApp message sent to HODs!');
+        }
+
+        // Newsletter Upload
+        document.getElementById('newsletterForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const title = document.getElementById('newsletterTitle').value;
+            const date = document.getElementById('newsletterDate').value;
+            const file = document.getElementById('newsletterFile').files[0];
+
+            if (file && file.type === 'application/pdf') {
+                const archive = document.querySelector('#newsletters .card-body');
+                const newItem = document.createElement('div');
+                newItem.className = 'list-item';
+                newItem.innerHTML = `
+                    <span class="date-label">${date}</span>
+                    <span>${title}</span>
+                    <a href="#" class="btn btn-sm btn-primary" download>Download</a>
+                `;
+                archive.prepend(newItem);
+                this.reset();
+                alert('Newsletter uploaded successfully!');
+            } else {
+                alert('Please upload a valid PDF file.');
+            }
+        });
+
+        // Research & Development Navigation
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('research-categories').style.display = 'none';
+                document.getElementById('department-selection').style.display = 'block';
+                document.getElementById('research-data').style.display = 'none';
+
+                const category = this.getAttribute('data-category');
+                document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('.department-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('research-categories').style.display = 'none';
+                document.getElementById('department-selection').style.display = 'none';
+                document.getElementById('research-data').style.display = 'block';
+
+                const department = this.getAttribute('data-department');
+                const category = document.querySelector('.category-btn.active').getAttribute('data-category');
+                loadResearchData(category, department);
+
+                document.querySelectorAll('.department-btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('#research .back-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const currentSection = this.closest('div[id]');
+                if (currentSection.id === 'department-selection') {
+                    document.getElementById('research-categories').style.display = 'block';
+                    document.getElementById('department-selection').style.display = 'none';
+                    document.getElementById('research-data').style.display = 'none';
+                } else if (currentSection.id === 'research-data') {
+                    document.getElementById('research-categories').style.display = 'none';
+                    document.getElementById('department-selection').style.display = 'block';
+                    document.getElementById('research-data').style.display = 'none';
+                }
+            });
+        });
+
+        // Sample Research Data
+        const researchData = {
+            journals: {
+                aiml: [
+                    { title: "AI in Healthcare", authors: "Dr. Vikram Singh", journal: "Journal of AI", year: 2024 },
+                    { title: "Deep Learning Models", authors: "Dr. Anil Kumar", journal: "AI Research", year: 2023 }
+                ],
+                cse: [
+                    { title: "Blockchain Security", authors: "Dr. Sanjay Rao", journal: "IEEE Transactions", year: 2024 }
+                ]
+            },
+            'international-conference': {
+                aiml: [
+                    { title: "AI for Smart Cities", authors: "Dr. Vikram Singh", conference: "ICAI 2024", year: 2024 }
+                ]
+            },
+            'national-conference': {
+                cse: [
+                    { title: "Cybersecurity Trends", authors: "Dr. Anil Kumar", conference: "NCC 2024", year: 2024 }
+                ]
+            },
+            'book-chapter': {
+                aiml: [
+                    { title: "Machine Learning Applications", authors: "Dr. Vikram Singh", book: "AI Advances", year: 2023 }
+                ]
+            },
+            'book-edited': {
+                cse: [
+                    { title: "Advances in Computing", editors: "Dr. Sanjay Rao", publisher: "Springer", year: 2024 }
+                ]
+            },
+            patents: {
+                aiml: [
+                    { title: "AI-based Diagnostic System", inventor: "Dr. Vikram Singh", patentNo: "US1234567", year: 2024 }
+                ]
+            }
+        };
+
+        function loadResearchData(category, department) {
+            const container = document.getElementById('data-content');
+            const data = researchData[category]?.[department];
+
+            if (data && data.length > 0) {
+                let html = `<h3>${category.replace(/-/g, ' ').toUpperCase()} - ${department.toUpperCase()}</h3>`;
+                html += `<div class="table-responsive"><table class="data-table"><thead><tr>`;
+                
+                // Define table headers based on category
+                const headers = category === 'patents' 
+                    ? ['Title', 'Inventor', 'Patent No.', 'Year']
+                    : category === 'book-edited'
+                    ? ['Title', 'Editors', 'Publisher', 'Year']
+                    : ['Title', 'Authors', category.includes('conference') ? 'Conference' : category === 'book-chapter' ? 'Book' : 'Journal', 'Year'];
+                
+                headers.forEach(header => html += `<th>${header}</th>`);
+                html += `</tr></thead><tbody>`;
+
+                data.forEach(item => {
+                    html += `<tr>`;
+                    if (category === 'patents') {
+                        html += `
+                            <td>${item.title}</td>
+                            <td>${item.inventor}</td>
+                            <td>${item.patentNo}</td>
+                            <td>${item.year}</td>
+                        `;
+                    } else if (category === 'book-edited') {
+                        html += `
+                            <td>${item.title}</td>
+                            <td>${item.editors}</td>
+                            <td>${item.publisher}</td>
+                            <td>${item.year}</td>
+                        `;
+                    } else {
+                        html += `
+                            <td>${item.title}</td>
+                            <td>${item.authors}</td>
+                            <td>${category.includes('conference') ? item.conference : category === 'book-chapter' ? item.book : item.journal}</td>
+                            <td>${item.year}</td>
+                        `;
+                    }
+                    html += `</tr>`;
+                });
+                html += `</tbody></table></div>`;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = `<p style="text-align:center; margin-top:20px;">No data available for this category and department.</p>`;
+            }
+        }
+
+        // Gallery Navigation
+        const galleryData = {
+            cse: [
+                { src: "https://via.placeholder.com/300x200?text=CSE+Event+1", caption: "Tech Fest 2024" },
+                { src: "https://via.placeholder.com/300x200?text=CSE+Event+2", caption: "Coding Workshop" }
+            ],
+            ise: [
+                { src: "https://via.placeholder.com/300x200?text=ISE+Event+1", caption: "Data Science Bootcamp" }
+            ],
+            ece: [
+                { src: "https://via.placeholder.com/300x200?text=ECE+Event+1", caption: "Circuit Design Workshop" }
+            ],
+            me: [
+                { src: "https://via.placeholder.com/300x200?text=ME+Event+1", caption: "Robotics Competition" }
+            ],
+            ce: [
+                { src: "https://via.placeholder.com/300x200?text=CE+Event+1", caption: "Structural Design Workshop" }
+            ],
+            eee: [
+                { src: "https://via.placeholder.com/300x200?text=EEE+Event+1", caption: "Power Systems Seminar" }
+            ],
+            che: [
+                { src: "https://via.placeholder.com/300x200?text=CHE+Event+1", caption: "Chemical Process Seminar" }
+            ],
+            bt: [
+                { src: "https://via.placeholder.com/300x200?text=BT+Event+1", caption: "Biotech Symposium" }
+            ]
+        };
+
+        document.querySelectorAll('.view-photos').forEach(button => {
+            button.addEventListener('click', function() {
+                const dept = this.closest('.department-card').getAttribute('data-dept');
+                document.getElementById('departments-view').classList.remove('active');
+                document.getElementById('photos-view').classList.add('active');
+
+                const title = document.getElementById('department-title');
+                title.textContent = this.closest('.department-card').querySelector('h3').textContent;
+
+                const photoGrid = document.getElementById('photo-grid');
+                photoGrid.innerHTML = '';
+                if (galleryData[dept]) {
+                    galleryData[dept].forEach(photo => {
+                        const photoItem = document.createElement('div');
+                        photoItem.innerHTML = `
+                            <img src="${photo.src}" alt="${photo.caption}">
+                            <div class="photo-caption">${photo.caption}</div>
+                        `;
+                        photoGrid.appendChild(photoItem);
+                    });
+                } else {
+                    photoGrid.innerHTML = `<p style="text-align:center; margin-top:20px;">No photos available for this department.</p>`;
+                }
+            });
+        });
+
+        document.querySelector('#photos-view .back-btn').addEventListener('click', function() {
+            document.getElementById('photos-view').classList.remove('active');
+            document.getElementById('departments-view').classList.add('active');
+        });
+
+        // Logout Function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('Logged out successfully!');
+                window.location.href = '/login'; // Redirect to login page
+            }
+        }
+
+        // Mobile Sidebar Toggle
+        document.querySelector('.mobile-toggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Initialize default views
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load default data for performance charts
+            if (document.getElementById('facultyBranchSelectPerformance').value) {
+                loadFacultyPerformanceDetails();
+            }
+            if (document.getElementById('studentBranchSelect').value) {
+                loadStudentPerformanceDetails();
+            }
+        });
+                // Institute Performance Chart
+                const ctx = document.getElementById('instituteChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Student Performance',
+                    data: [85, 88, 90, 92, 91, 93],
+                    borderColor: 'var(--primary-color)',
+                    fill: false,
+                    tension: 0.1
+                }, {
+                    label: 'Placement Rate',
+                    data: [80, 82, 85, 88, 90, 92],
+                    borderColor: 'var(--secondary-color)',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: 2, // Adjust aspect ratio for better fit
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        max: 100,
+                        ticks: {
+                            stepSize: 5
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            autoSkip: true,
+                            maxTicksLimit: 6
+                        }
+                    }
+                }
+            }
+        });
+        function logout() {
+    window.location.href = "login.html"; // Adjust path if your login file is in a folder
+  }
+
+    </script>
+</body>
+</html>

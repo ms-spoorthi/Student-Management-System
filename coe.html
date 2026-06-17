@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COE Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498bb;
+            --secondary-color: #2ecc79;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --warning-color: #e74c3c;
+            --success-color: #27ae60;
+            --text-color: #333;
+            --border-color: #ddd;
+            --hover-color: rgba(74, 111, 165, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 15px 0;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .college-brand {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .college-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .college-brand span {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            background-color: #0369a1;
+        }
+
+        .menu-item.active {
+            background-color: #0369a1;
+        }
+
+        .menu-item.active i,
+        .menu-item.active span {
+            color: white;
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .college-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .college-logo img {
+            height: 80px;
+            margin-right: 100px;
+        }
+
+        .college-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--dark-color);
+            text-transform: uppercase;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .content-area {
+            padding: 25px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-heading {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .dashboard-subheading {
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            color: var(--dark-color);
+            font-size: 1.2rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .card-body {
+            color: #666;
+        }
+
+        .stats-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .stats-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .data-table tr:hover {
+            background-color: var(--hover-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5a84;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a8b7d;
+        }
+
+        .status-label {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-approved {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .calendar-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-header button {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-day {
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .calendar-day.header {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .calendar-day.event {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .calendar-day.empty {
+            background-color: #f9f9f9;
+        }
+
+        .calendar-day:hover {
+            background-color: var(--hover-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .modal-close:hover {
+            color: var(--warning-color);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+                position: fixed;
+                width: 280px;
+                z-index: 1000;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .mobile-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: var(--dark-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                margin-right: 15px;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .college-logo span {
+                display: none;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="college-brand">
+                <img src="pes.png" alt="College Logo">
+                <span>PESITM COLLEGE</span>
+            </div>
+            <div class="sidebar-header">
+                <h2>COE Dashboard</h2>
+                <p>Welcome, COE Admin!</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="showTab('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showTab('exam-scheduling')">
+                    <i class="fas fa-calendar"></i>
+                    <span>Exam Scheduling</span>
+                </div>
+                <div class="menu-item" onclick="showTab('student-registration')">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Student Registration</span>
+                </div>
+                <div class="menu-item" onclick="showTab('admit-card')">
+                    <i class="fas fa-ticket-alt"></i>
+                    <span>Admit Card</span>
+                </div>
+                <div class="menu-item" onclick="showTab('question-paper')">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Question Paper</span>
+                </div>
+                <div class="menu-item" onclick="showTab('marks-entry')">
+                    <i class="fas fa-edit"></i>
+                    <span>Marks Entry</span>
+                </div>
+                <div class="menu-item" onclick="showTab('result-processing')">
+                    <i class="fas fa-calculator"></i>
+                    <span>Result Processing</span>
+                </div>
+                <div class="menu-item" onclick="showTab('revaluation')">
+                    <i class="fas fa-redo"></i>
+                    <span>Revaluation Requests</span>
+                </div>
+                <div class="menu-item" onclick="showTab('supplementary')">
+                    <i class="fas fa-retweet"></i>
+                    <span>Supplementary Exams</span>
+                </div>
+                <div class="menu-item" onclick="showTab('certificates')">
+                    <i class="fas fa-certificate"></i>
+                    <span>Certificates</span>
+                </div>
+                <div class="menu-item" onclick="showTab('malpractice')">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Malpractice Reporting</span>
+                </div>
+                <div class="menu-item" onclick="showTab('academic-calendar')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Academic Calendar</span>
+                </div>
+                <div class="menu-item" onclick="showTab('reports')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistical Reports</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="header">
+                <div class="mobile-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="user-actions">
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Settings Panel (Initially Hidden) -->
+                <div id="settings-panel" style="display: none; padding: 25px;">
+                    <h2>Account Settings</h2>
+                    <p>Manage your password below.</p>
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3>Change Password</h3>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Password updated successfully!');">
+                                <div class="form-group">
+                                    <label for="current-password">Current Password</label>
+                                    <input type="password" class="form-control" id="current-password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">New Password</label>
+                                    <input type="password" class="form-control" id="new-password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm-password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <h1 class="dashboard-heading">COE Dashboard</h1>
+                    <p class="dashboard-subheading">Overview of examination activities</p>
+
+                    <div class="card-grid">
+                        <div class="card stats-card">
+                            <i class="fas fa-calendar" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">3</div>
+                            <div class="stats-label">Scheduled Exams</div>
+                        </div>
+                        <div class="card stats-card">
+                            <i class="fas fa-user-plus" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">1200</div>
+                            <div class="stats-label">Registered Students</div>
+                        </div>
+                        <div class="card stats-card">
+                            <i class="fas fa-file-alt" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">15</div>
+                            <div class="stats-label">Question Papers</div>
+                        </div>
+                        <div class="card stats-card">
+                            <i class="fas fa-chart-bar" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">85%</div>
+                            <div class="stats-label">Pass Percentage</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pass Percentage by Department</h3>
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="passChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam Scheduling Tab -->
+                <div id="exam-scheduling" class="tab-content">
+                    <h1 class="dashboard-heading">Exam Scheduling</h1>
+                    <p class="dashboard-subheading">Create and manage exam timetables</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Create Exam Schedule</h3>
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Schedule created!');">
+                                <div class="form-group">
+                                    <label for="examType">Exam Type</label>
+                                    <select class="form-control" id="examType">
+                                        <option>Internal Test</option>
+                                        <option>External Exam</option>
+                                        <option>Supplementary Exam</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="semester">Semester</label>
+                                    <select class="form-control" id="semester">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="course">Course</label>
+                                    <input type="text" class="form-control" id="course">
+                                </div>
+                                <div class="form-group">
+                                    <label for="examDate">Exam Date</label>
+                                    <input type="date" class="form-control" id="examDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="examTime">Exam Time</label>
+                                    <input type="time" class="form-control" id="examTime">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create Schedule</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Scheduled Exams</h3>
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Exam Type</th>
+                                            <th>Semester</th>
+                                            <th>Course</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Internal Test</td>
+                                            <td>4</td>
+                                            <td>Data Structures</td>
+                                            <td>May 10, 2025</td>
+                                            <td>9:00 AM</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">Edit</button>
+                                                <button class="btn btn-warning btn-sm">Delete</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Exam Registration Tab -->
+                <div id="student-registration" class="tab-content">
+                    <h1 class="dashboard-heading">Student Exam Registration</h1>
+                    <p class="dashboard-subheading">Manage student registrations for exams</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Registered Students</h3>
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Semester</th>
+                                            <th>Exam Type</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>PES001</td>
+                                            <td>Aisha Khan</td>
+                                            <td>4</td>
+                                            <td>Semester Exam</td>
+                                            <td><span class="status-label status-approved">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">View</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Verify Eligibility</h3>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Eligibility verified!');">
+                                <div class="form-group">
+                                    <label for="studentId">Student ID</label>
+                                    <input type="text" class="form-control" id="studentId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="attendance">Attendance (%)</label>
+                                    <input type="number" class="form-control" id="attendance">
+                                </div>
+                                <div class="form-group">
+                                    <label for="internalMarks">Internal Marks</label>
+                                    <input type="number" class="form-control" id="internalMarks">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Verify</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admit Card Generation Tab -->
+                <div id="admit-card" class="tab-content">
+                    <h1 class="dashboard-heading">Admit Card Generation</h1>
+                    <p class="dashboard-subheading">Generate and issue admit cards</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Generate Admit Card</h3>
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Admit card generated!');">
+                                <div class="form-group">
+                                    <label for="studentIdAdmit">Student ID</label>
+                                    <input type="text" class="form-control" id="studentIdAdmit">
+                                </div>
+                                <div class="form-group">
+                                    <label for="examTypeAdmit">Exam Type</label>
+                                    <select class="form-control" id="examTypeAdmit">
+                                        <option>Semester Exam</option>
+                                        <option>Supplementary Exam</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Generate</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Issued Admit Cards</h3>
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Exam Type</th>
+                                            <th>Issue Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>PES001</td>
+                                            <td>Aisha Khan</td>
+                                            <td>Semester Exam</td>
+                                            <td>Apr 20, 2025</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">Download</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Paper Management Tab -->
+                <div id="question-paper" class="tab-content">
+                    <h1 class="dashboard-heading">Question Paper Management</h1>
+                    <p class="dashboard-subheading">Upload and manage question papers securely</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Upload Question Paper</h3>
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Question paper uploaded!');">
+                                <div class="form-group">
+                                    <label for="coursePaper">Course</label>
+                                    <input type="text" class="form-control" id="coursePaper">
+                                </div>
+                                <div class="form-group">
+                                    <label for="examTypePaper">Exam Type</label>
+                                    <select class="form-control" id="examTypePaper">
+                                        <option>Internal Test</option>
+                                        <option>External Exam</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="paperFile">Question Paper</label>
+                                    <input type="file" class="form-control" id="paperFile">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Upload</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marks Entry Tab -->
+                <div id="marks-entry" class="tab-content">
+                    <h1 class="dashboard-heading">Marks Entry</h1>
+                    <p class="dashboard-subheading">Enter internal and external exam marks</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Enter Internal Marks</h3>
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Internal marks entered!');">
+                                <div class="form-group">
+                                    <label for="studentIdMarks">Student ID</label>
+                                    <input type="text" class="form-control" id="studentIdMarks">
+                                </div>
+                                <div class="form-group">
+                                    <label for="courseMarks">Course</label>
+                                    <input type="text" class="form-control" id="courseMarks">
+                                </div>
+                                <div class="form-group">
+                                    <label for="marks">Marks</label>
+                                    <input type="number" class="form-control" id="marks">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Enter External Marks</h3>
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('External marks entered!');">
+                                <div class="form-group">
+                                    <label for="studentIdExtMarks">Student ID</label>
+                                    <input type="text" class="form-control" id="studentIdExtMarks">
+                                </div>
+                                <div class="form-group">
+                                    <label for="courseExtMarks">Course</label>
+                                    <input type="text" class="form-control" id="courseExtMarks">
+                                </div>
+                                <div class="form-group">
+                                    <label for="extMarks">Marks</label>
+                                    <input type="number" class="form-control" id="extMarks">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Processing Tab -->
+                <div id="result-processing" class="tab-content">
+                    <h1 class="dashboard-heading">Result Processing</h1>
+                    <p class="dashboard-subheading">Calculate and publish results</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Process Results</h3>
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Results processed!');">
+                                <div class="form-group">
+                                    <label for="semesterResult">Semester</label>
+                                    <select class="form-control" id="semesterResult">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="departmentResult">Department</label>
+                                    <select class="form-control" id="departmentResult">
+                                        <option>Computer Science</option>
+                                        <option>Electronics</option>
+                                        <option>Mechanical</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Process</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Published Results</h3>
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Semester</th>
+                                            <th>SGPA</th>
+                                            <th>CGPA</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>PES001</td>
+                                            <td>Aisha Khan</td>
+                                            <td>4</td>
+                                            <td>8.7</td>
+                                            <td>8.5</td>
+                                            <td><span class="status-label status-approved">Pass</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revaluation Requests Tab -->
+                <div id="revaluation" class="tab-content">
+                    <h1 class="dashboard-heading">Revaluation Requests</h1>
+                    <p class="dashboard-subheading">Manage student revaluation requests</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Pending Requests</h3>
+                            <i class="fas fa-redo"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Course</th>
+                                            <th>Request Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>PES001</td>
+                                            <td>Data Structures</td>
+                                            <td>Apr 25, 2025</td>
+                                            <td><span class="status-label status-pending">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm">Approve</button>
+                                                <button class="btn btn-warning btn-sm">Reject</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Supplementary Exams Tab -->
+                <div id="supplementary" class="tab-content">
+                    <h1 class="dashboard-heading">Supplementary Exams</h1>
+                    <p class="dashboard-subheading">Manage backlog exam registrations</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Supplementary Registrations</h3>
+                            <i class="fas fa-retweet"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Course</th>
+                                            <th>Exam Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>PES002</td>
+                                            <td>Mathematics</td>
+                                            <td>May 15, 2025</td>
+                                            <td><span class="status-label status-approved">Registered</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificates Issuing Tab -->
+                <div id="certificates" class="tab-content">
+                    <h1 class="dashboard-heading">Certificates Issuing</h1>
+                    <p class="dashboard-subheading">Issue certificates and transcripts</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Issue Certificate</h3>
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Certificate issued!');">
+                                <div class="form-group">
+                                    <label for="studentIdCert">Student ID</label>
+                                    <input type="text" class="form-control" id="studentIdCert">
+                                </div>
+                                <div class="form-group">
+                                    <label for="certificateType">Certificate Type</label>
+                                    <select class="form-control" id="certificateType">
+                                        <option>Provisional Certificate</option>
+                                        <option>Degree Certificate</option>
+                                        <option>Transcript</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Issue</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Grade Card Printing</h3>
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Grade card printed!');">
+                                <div class="form-group">
+                                    <label for="studentIdGrade">Student ID</label>
+                                    <input type="text" class="form-control" id="studentIdGrade">
+                                </div>
+                                <div class="form-group">
+                                    <label for="semesterGrade">Semester</label>
+                                    <select class="form-control" id="semesterGrade">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Print</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Malpractice Reporting Tab -->
+                <div id="malpractice" class="tab-content">
+                    <h1 class="dashboard-heading">Malpractice Reporting</h1>
+                    <p class="dashboard-subheading">Record exam malpractice cases</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Report Malpractice</h3>
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Malpractice reported!');">
+                                <div class="form-group">
+                                    <label for="studentIdMal">Student ID</label>
+                                    <input type="text" class="form-control" id="studentIdMal">
+                                </div>
+                                <div class="form-group">
+                                    <label for="examMal">Exam</label>
+                                    <input type="text" class="form-control" id="examMal">
+                                </div>
+                                <div class="form-group">
+                                    <label for="detailsMal">Details</label>
+                                    <textarea class="form-control" id="detailsMal" rows="5"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Report</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Calendar Tab -->
+                <div id="academic-calendar" class="tab-content">
+                    <h1 class="dashboard-heading">Academic Calendar</h1>
+                    <p class="dashboard-subheading">Publish examination calendar</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Add Calendar Event</h3>
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Event added!');">
+                                <div class="form-group">
+                                    <label for="eventName">Event Name</label>
+                                    <input type="text" class="form-control" id="eventName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventDate">Date</label>
+                                    <input type="date" class="form-control" id="eventDate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="eventDetails">Details</label>
+                                    <textarea class="form-control" id="eventDetails" rows="5"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Event</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Examination Calendar</h3>
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="calendar-container">
+                                <div class="calendar-header">
+                                    <button onclick="prevMonth()"><</button>
+                                    <h3 id="calendarTitle"></h3>
+                                    <button onclick="nextMonth()">></button>
+                                </div>
+                                <div class="calendar-grid" id="calendarGrid"></div>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Date</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Semester Exams Start</td>
+                                            <td>Jun 1, 2025</td>
+                                            <td>All departments</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistical Reports Tab -->
+                <div id="reports" class="tab-content">
+                    <h1 class="dashboard-heading">Statistical Reports</h1>
+                    <p class="dashboard-subheading">Generate performance analysis reports</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Generate Report</h3>
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Report generated!');">
+                                <div class="form-group">
+                                    <label for="reportType">Report Type</label>
+                                    <select class="form-control" id="reportType">
+                                        <option>Pass Percentage</option>
+                                        <option>Department-wise Performance</option>
+                                        <option>Toppers List</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="semesterReport">Semester</label>
+                                    <select class="form-control" id="semesterReport">
+                                        <option>1</option>
+                                        <option>2</option>
+                                        <option>3</option>
+                                        <option>4</option>
+                                        <option>5</option>
+                                        <option>6</option>
+                                        <option>7</option>
+                                        <option>8</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Generate</button>
+                            </form>
+                            <div class="chart-container" style="margin-top: 25px;">
+                                <canvas id="semesterPassChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Details -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            // Show the selected tab
+            document.getElementById(tabId).classList.add('active');
+
+            // Update active menu item
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.menu-item[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+            // Hide settings panel
+            document.getElementById('settings-panel').style.display = 'none';
+            closeModal();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailsModal');
+            modal.classList.remove('active');
+            document.getElementById('modalContent').innerHTML = '';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function toggleSettingsPanel() {
+            const panel = document.getElementById('settings-panel');
+            const isVisible = panel.style.display === 'block';
+
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            panel.style.display = isVisible ? 'none' : 'block';
+
+            if (isVisible) {
+                document.getElementById('dashboard').classList.add('active');
+                document.querySelector('.menu-item[onclick="showTab(\'dashboard\')"]').classList.add('active');
+            }
+        }
+
+        function logout() {
+            window.location.href = '/login';
+        }
+
+        // Pass Percentage Chart
+        const passCtx = document.getElementById('passChart').getContext('2d');
+        const passChart = new Chart(passCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Computer Science', 'Electronics', 'Mechanical'],
+                datasets: [{
+                    label: 'Pass Percentage',
+                    data: [85, 78, 82],
+                    backgroundColor: 'rgba(74, 111, 165, 0.6)',
+                    borderColor: '#4a6fa5',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Pass Percentage by Department'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Percentage'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Department'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Semester Pass Percentage Chart
+        const semesterPassCtx = document.getElementById('semesterPassChart').getContext('2d');
+        const semesterPassChart = new Chart(semesterPassCtx, {
+            type: 'line',
+            data: {
+                labels: ['Semester 1', 'Semester 2', 'Semester 3', 'Semester 4'],
+                datasets: [{
+                    label: 'Pass Percentage',
+                    data: [80, 82, 85, 87],
+                    borderColor: '#4a6fa5',
+                    backgroundColor: 'rgba(74, 111, 165, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Pass Percentage by Semester'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Percentage'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Semester'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Placeholder for sending notifications
+        function sendNotification(type, message) {
+            console.log(`Sending ${type} notification: ${message}`);
+        }
+
+        // Notify students about exam dates
+        document.querySelectorAll('.btn-primary').forEach(button => {
+            button.addEventListener('click', () => {
+                if (button.textContent.includes('Create Schedule')) {
+                    sendNotification('email', 'New exam schedule created for May 10, 2025.');
+                } else if (button.textContent.includes('Process')) {
+                    sendNotification('portal', 'Results for Semester 4 published.');
+                }
+            });
+        });
+
+        // Calendar functionality
+        let currentDate = new Date(2025, 5, 1); // Start with June 2025
+        const events = [
+            { date: '2025-06-01', title: 'Semester Exams Start', details: 'All departments' }
+        ];
+
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarTitle = document.getElementById('calendarTitle');
+            calendarGrid.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            calendarTitle.textContent = `${currentDate.toLocaleString('default', { month: 'long' })} ${year}`;
+
+            // Days of the week
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day header';
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
+            });
+
+            // Get first day and number of days in month
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            // Add empty days before the first day
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day empty';
+                calendarGrid.appendChild(emptyDay);
+            }
+
+            // Add days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = day;
+
+                // Check for events
+                const event = events.find(e => e.date === dateStr);
+                if (event) {
+                    dayElement.className += ' event';
+                    dayElement.title = event.title;
+                    dayElement.onclick = () => alert(`${event.title}: ${event.details}`);
+                }
+
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // Initial render
+        renderCalendar();
+    </script>
+</body>
+</html>

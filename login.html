@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Management System - Login</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body.light-mode {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .college-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .college-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    .portal-name {
+      font-size: 1.2rem;
+      color: #555;
+    }
+
+    .login-card {
+      background-color: #ffffff;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+      background-color: #fafafa;
+    }
+
+    .input-icon { margin-right: 8px; font-size: 1.1rem; color: #888; }
+    .form-control {
+      border: none;
+      outline: none;
+      background: transparent;
+      width: 100%;
+      font-size: 1rem;
+      color: #333;
+    }
+
+    .login-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      margin-bottom: 20px;
+    }
+
+    .remember-me input { margin-right: 5px; }
+
+    .login-button {
+      width: 100%;
+      background-color: #3498db;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-top: 10px;
+    }
+
+    .login-button:hover { background-color: #2e86c1; }
+
+    .back-button {
+      background-color: #bdc3c7;
+      color: #333;
+    }
+
+    .back-button:hover { background-color: #a6acaf; }
+
+    .footer {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 0.85rem;
+      background-color: #f0f0f0;
+      color: #777;
+      margin-top: auto;
+    }
+
+    .role-selection {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .role-button {
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      border: none;
+      border-radius: 8px;
+      background-color: #2980b9;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      min-width: 110px;
+      flex: 0 0 auto;
+    }
+
+    .role-button:hover {
+      background-color: #21618c;
+    }
+
+    .subtext {
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 5px;
+}
+
+.role-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 25px;
+}
+
+.role-box {
+  width: 140px;
+  height: 140px;
+  background-color: #3498db;
+  border-radius: 16px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.role-box:hover {
+  background-color: #2e86c1;
+  transform: translateY(-5px);
+}
+
+.role-box span {
+  margin-top: 10px;
+  font-size: 1.1rem;
+}
+
+  </style>
+</head>
+<body class="light-mode">
+  <main class="login-container">
+    <!-- College Logo and Name -->
+    <div class="logo-container">
+      <img src="pes.png" alt="College Logo" class="college-logo" />
+      <h1 class="college-name">PESITM COLLEGE OF ENGINEERING</h1>
+      <p class="portal-name">Student Management System - Login Portal</p>
+    </div>
+
+    <div class="login-card">
+      <!-- Step 0: Role Selection -->
+      <!-- Step 0: Role Selection -->
+<div id="role-selection">
+  <div class="login-header">
+    <h2>Select Your Role</h2>
+    <p class="subtext">Choose one of the options below to log in</p>
+  </div>
+  <div class="role-wrapper">
+    <div class="role-box" onclick="selectRole('principal')">🎓<span>Principal</span></div>
+    <div class="role-box" onclick="selectRole('hod')">🧑‍🏫<span>HOD</span></div>
+    <div class="role-box" onclick="selectRole('faculty')">👨‍🏫<span>Faculty</span></div>
+    <div class="role-box" onclick="selectRole('coe')">📝<span>COE</span></div>
+    <div class="role-box" onclick="selectRole('student')">🎒<span>Student</span></div>
+    <div class="role-box" onclick="selectRole('parent')">👨‍👩‍👧<span>Parent</span></div>
+  </div>
+</div>
+
+
+
+      <!-- Step 1: Password Entry -->
+      <form id="password-form" style="display: none;">
+        <div class="login-header">
+          <h2>Welcome</h2>
+          <p id="role-display"></p>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="password" class="form-control" placeholder="Enter your password" required />
+          </div>
+        </div>
+        <div class="login-options">
+          <label class="remember-me">
+            <input type="checkbox" id="remember" />
+            Remember me
+          </label>
+          <a href="#" class="forgot-password">Forgot Password?</a>
+        </div>
+        <button type="submit" class="login-button">Login</button>
+        <button type="button" id="back-to-role" class="login-button back-button">Back</button>
+      </form>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2025 Student Management System. All rights reserved.
+  </footer>
+
+  <script>
+    const rolePasswords = {
+      "principal": "principal123",
+      "hod": "hod123",
+      "faculty": "faculty123",
+      "coe": "coe123",        // Added COE password
+      "student": "student123",
+      "parent": "parent123"
+    };
+
+    const roleRedirects = {
+      "principal": "principal.html",
+      "hod": "hod.html",
+      "faculty": "faculty.html",
+      "coe": "coe.html",      // Added COE redirect
+      "student": "student.html",
+      "parent": "parent.html"
+    };
+
+    const roleDisplayNames = {
+      "principal": "Principal",
+      "hod": "Head of Department",
+      "faculty": "Faculty",
+      "coe": "Controller of Examinations",  // Display name for COE
+      "student": "Student",
+      "parent": "Parent"
+    };
+
+    let currentRole = "";
+
+    function selectRole(role) {
+      currentRole = role;
+      document.getElementById("role-selection").style.display = "none";
+      document.getElementById("password-form").style.display = "block";
+      document.getElementById("role-display").textContent = `Sign in as ${roleDisplayNames[role]}`;
+    }
+
+    document.getElementById("password-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const password = document.getElementById("password").value;
+      if (password === rolePasswords[currentRole]) {
+        window.location.href = roleRedirects[currentRole];
+      } else {
+        alert("Invalid password! Please try again.");
+      }
+    });
+
+    document.getElementById("back-to-role").addEventListener("click", function () {
+      document.getElementById("password-form").reset();
+      document.getElementById("password-form").style.display = "none";
+      document.getElementById("role-selection").style.display = "block";
+    });
+    
+  </script>
+</body>
+</html>

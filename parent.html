@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parents Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498bb;
+            --secondary-color: #2ecc79;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --warning-color: #e74c3c;
+            --success-color: #27ae60;
+            --text-color: #333;
+            --border-color: #ddd;
+            --hover-color: rgba(74, 111, 165, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 15px 0;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .college-brand {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .college-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .college-brand span {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            background-color: #0369a1;
+        }
+
+        .menu-item.active i,
+        .menu-item.active span {
+            color: white;
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .content-area {
+            padding: 25px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-heading {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .dashboard-subheading {
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            color: var(--dark-color);
+            font-size: 1.2rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .card-body {
+            color: #666;
+        }
+
+        .list-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .date-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .status-label {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-approved {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .data-table tr:hover {
+            background-color: var(--hover-color);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5a84;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a8b7d;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 25px 15px;
+            cursor: pointer;
+        }
+
+        .stats-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .details-container {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .modal-close:hover {
+            color: var(--warning-color);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+                position: fixed;
+                width: 280px;
+                z-index: 1000;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .mobile-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: var(--dark-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                margin-right: 15px;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="college-brand">
+                <img src="pes.png" alt="College Logo">
+                <span>PESITM COLLEGE</span>
+            </div>
+            <div class="sidebar-header">
+                <h2>Parents Dashboard</h2>
+                <p>Welcome, Mr. & Mrs. Khan!</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="showTab('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showTab('academic-performance')">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Academic Performance</span>
+                </div>
+                <div class="menu-item" onclick="showTab('events-exams')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Upcoming Events/Exams</span>
+                </div>
+                <div class="menu-item" onclick="showTab('coe')">
+                    <i class="fas fa-university"></i>
+                    <span>COE</span>
+                </div>
+                <div class="menu-item" onclick="showTab('exam-dates')">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Exam & Test Dates</span>
+                </div>
+                <div class="menu-item" onclick="showTab('behavior')">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>Behavior/Discipline Notes</span>
+                </div>
+                <div class="menu-item" onclick="showTab('ptm')">
+                    <i class="fas fa-users"></i>
+                    <span>PTM Dates</span>
+                </div>
+                <div class="menu-item" onclick="showTab('mentor')">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Mentor Details</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="header">
+                <div class="mobile-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="user-actions">
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Settings Panel (Initially Hidden) -->
+                <div id="settings-panel" style="display: none; padding: 25px;">
+                    <h2>Account Settings</h2>
+                    <p>Manage your password below.</p>
+                    <div class="card" style="margin-top: 20px;">
+                        <div class="card-header">
+                            <h3>Change Password</h3>
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Password updated successfully!');">
+                                <div class="form-group">
+                                    <label for="current-password">Current Password</label>
+                                    <input type="password" class="form-control" id="current-password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">New Password</label>
+                                    <input type="password" class="form-control" id="new-password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirm-password" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Change Password</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <h1 class="dashboard-heading">Parents Dashboard</h1>
+                    <p class="dashboard-subheading">Overview of your child's academic and extracurricular activities</p>
+
+                    <!-- Quick Stats -->
+                    <div class="card-grid">
+                        <div class="card stats-card" onclick="showDetails('student-details')">
+                            <i class="fas fa-user-graduate" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">Aisha Khan</div>
+                            <div class="stats-label">Student Name</div>
+                        </div>
+                        <div class="card stats-card" onclick="showDetails('student-id-details')">
+                            <i class="fas fa-id-card" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">CSE2B-1001</div>
+                            <div class="stats-label">Student ID</div>
+                        </div>
+                        <div class="card stats-card" onclick="showDetails('attendance-details')">
+                            <i class="fas fa-percentage" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">92%</div>
+                            <div class="stats-label">Attendance</div>
+                        </div>
+                        <div class="card stats-card" onclick="showDetails('grade-details')">
+                            <i class="fas fa-star" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">A</div>
+                            <div class="stats-label">Overall Grade</div>
+                        </div>
+                    </div>
+
+                    <!-- Details Sections (Hidden, used as content source for modal) -->
+                    <div id="student-details" class="details-container">
+                        <h3>Student Details</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Department</th>
+                                        <th>Year</th>
+                                        <th>Contact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Aisha Khan</td>
+                                        <td>Computer Science</td>
+                                        <td>2nd Year</td>
+                                        <td>aisha.khan@pesitm.edu</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="student-id-details" class="details-container">
+                        <h3>Student ID Details</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Section</th>
+                                        <th>Batch</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>CSE2B-1001</td>
+                                        <td>CSE-2B</td>
+                                        <td>2023-2027</td>
+                                        <td>Active</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="attendance-details" class="details-container">
+                        <h3>Attendance Details</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Total Classes</th>
+                                        <th>Classes Attended</th>
+                                        <th>Attendance %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Data Structures</td>
+                                        <td>40</td>
+                                        <td>38</td>
+                                        <td>95%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Algorithm Design</td>
+                                        <td>35</td>
+                                        <td>32</td>
+                                        <td>91%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Database Management</td>
+                                        <td>42</td>
+                                        <td>37</td>
+                                        <td>88%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div id="grade-details" class="details-container">
+                        <h3>Grade Details</h3>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>Marks Obtained</th>
+                                        <th>Total Marks</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Data Structures</td>
+                                        <td>92</td>
+                                        <td>100</td>
+                                        <td>A</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Algorithm Design</td>
+                                        <td>85</td>
+                                        <td>100</td>
+                                        <td>B+</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Database Management</td>
+                                        <td>78</td>
+                                        <td>100</td>
+                                        <td>B</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Quick Updates</h3>
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <div>
+                                    <strong>Upcoming Exam</strong>
+                                    <div>Data Structures - May 20, 2025</div>
+                                </div>
+                                <span class="date-label">Posted: Apr 25</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>PTM Scheduled</strong>
+                                    <div>Parent-Teacher Meeting - May 15, 2025</div>
+                                </div>
+                                <span class="date-label">Posted: Apr 20</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Behavior Note</strong>
+                                    <div>Commended for leadership in group project</div>
+                                </div>
+                                <span class="date-label">Posted: Apr 18</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               
+                <!-- Academic Performance Tab -->
+                <div id="academic-performance" class="tab-content">
+                    <h1 class="dashboard-heading">Academic Performance</h1>
+                    <p class="dashboard-subheading">Subject-wise marks, grades, and progress report</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Subject-wise Performance</h3>
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Subject</th>
+                                            <th>Marks Obtained</th>
+                                            <th>Total Marks</th>
+                                            <th>Grade</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Data Structures</td>
+                                            <td>92</td>
+                                            <td>100</td>
+                                            <td>A</td>
+                                            <td>Excellent performance</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Algorithm Design</td>
+                                            <td>85</td>
+                                            <td>100</td>
+                                            <td>B+</td>
+                                            <td>Good, needs practice in problem-solving</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Database Management</td>
+                                            <td>78</td>
+                                            <td>100</td>
+                                            <td>B</td>
+                                            <td>Improve SQL query skills</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="academicChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Progress Report</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-body">
+                            <p>Aisha's overall performance has improved by 10% compared to the previous semester. Consistent attendance and active participation in class have contributed to her success.</p>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 85%;"></div>
+                            </div>
+                            <p><strong>Overall Progress: 85%</strong></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Events/Exams Tab -->
+                <div id="events-exams" class="tab-content">
+                    <h1 class="dashboard-heading">Upcoming Events/Exams</h1>
+                    <p class="dashboard-subheading">Stay informed about college events and examinations</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Event & Exam Calendar</h3>
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <div>
+                                    <strong>Guest Lecture on AI</strong>
+                                    <div>Seminar Hall 1</div>
+                                </div>
+                                <span class="date-label">April 28, 2025</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Data Structures Midterm</strong>
+                                    <div>Exam Hall 1</div>
+                                </div>
+                                <span class="date-label">May 20, 2025</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>End Semester Exams</strong>
+                                    <div>Schedule published</div>
+                                </div>
+                                <span class="date-label">June 5, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COE Tab -->
+                <div id="coe" class="tab-content">
+                    <h1 class="dashboard-heading">Controller of Examinations</h1>
+                    <p class="dashboard-subheading">View examination results and related information</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Examination Results</h3>
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Exam</th>
+                                            <th>Course</th>
+                                            <th>Marks</th>
+                                            <th>Grade</th>
+                                            <th>Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Mid Semester</td>
+                                            <td>Data Structures</td>
+                                            <td>92</td>
+                                            <td>A</td>
+                                            <td>April 10, 2025</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Quiz</td>
+                                            <td>Algorithm Design</td>
+                                            <td>85</td>
+                                            <td>B+</td>
+                                            <td>April 15, 2025</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Assignment</td>
+                                            <td>Database Management</td>
+                                            <td>78</td>
+                                            <td>B</td>
+                                            <td>April 18, 2025</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Exam & Test Dates Tab -->
+                <div id="exam-dates" class="tab-content">
+                    <h1 class="dashboard-heading">Exam & Test Dates</h1>
+                    <p class="dashboard-subheading">Schedule of upcoming exams and tests</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Exam Schedule</h3>
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th>
+                                            <th>Exam Type</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Venue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Data Structures</td>
+                                            <td>Mid Semester</td>
+                                            <td>May 20, 2025</td>
+                                            <td>10:00 AM - 12:00 PM</td>
+                                            <td>Exam Hall 1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Algorithm Design</td>
+                                            <td>End Semester</td>
+                                            <td>June 5, 2025</td>
+                                            <td>2:00 PM - 5:00 PM</td>
+                                            <td>Exam Hall 3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Database Management</td>
+                                            <td>Quiz</td>
+                                            <td>May 5, 2025</td>
+                                            <td>11:00 AM - 11:30 AM</td>
+                                            <td>Room 304</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Behavior/Discipline Notes Tab -->
+                <div id="behavior" class="tab-content">
+                    <h1 class="dashboard-heading">Behavior/Discipline Notes</h1>
+                    <p class="dashboard-subheading">Notes regarding your child's behavior and discipline</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Notes</h3>
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <div>
+                                    <strong>Leadership Recognition</strong>
+                                    <div>Commended for leading a successful group project in Data Structures</div>
+                                </div>
+                                <span class="date-label">April 18, 2025</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Active Participation</strong>
+                                    <div>Noted for consistent participation in class discussions</div>
+                                </div>
+                                <span class="date-label">April 10, 2025</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Minor Warning</strong>
+                                    <div>Reminded to submit assignments on time</div>
+                                </div>
+                                <span class="date-label">April 5, 2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PTM Dates Tab -->
+                <div id="ptm" class="tab-content">
+                    <h1 class="dashboard-heading">Parent-Teacher Meeting Dates</h1>
+                    <p class="dashboard-subheading">Schedule of upcoming PTM sessions</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>PTM Schedule</h3>
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <div>
+                                    <strong>PTM - Semester Review</strong>
+                                    <div>Discuss mid-semester progress</div>
+                                </div>
+                                <span class="date-label">May 15, 2025, 10:00 AM</span>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>PTM - Pre-Exams</strong>
+                                    <div>Preparation for end-semester exams</div>
+                                </div>
+                                <span class="date-label">June 2, 2025, 11:00 AM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mentor Details Tab -->
+                <div id="mentor" class="tab-content">
+                    <h1 class="dashboard-heading">Mentor Details</h1>
+                    <p class="dashboard-subheading">Contact information and details of your child's mentor</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Mentor Information</h3>
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <div>
+                                    <strong>Name</strong>
+                                    <div>Prof. Sarah Johnson</div>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Designation</strong>
+                                    <div>Associate Professor, Computer Science Engineering</div>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Email</strong>
+                                    <div>sarah.johnson@pesitm.edu</div>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Phone</strong>
+                                    <div>(555) 123-4567</div>
+                                </div>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Office Hours</strong>
+                                    <div>Mon & Wed: 3:00 PM - 4:00 PM, Room 405</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="margin-top: 20px;">Contact Mentor</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Details -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`.menu-item[onclick="showTab('${tabId}')"]`).classList.add('active');
+
+            document.getElementById('settings-panel').style.display = 'none';
+            closeModal();
+        }
+
+        function showDetails(detailsId) {
+            const modal = document.getElementById('detailsModal');
+            const modalContent = document.getElementById('modalContent');
+            const detailsContainer = document.getElementById(detailsId);
+
+            if (detailsContainer) {
+                modalContent.innerHTML = detailsContainer.innerHTML;
+                modal.classList.add('active');
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailsModal');
+            modal.classList.remove('active');
+            document.getElementById('modalContent').innerHTML = '';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        function toggleSettingsPanel() {
+            const panel = document.getElementById('settings-panel');
+            const isVisible = panel.style.display === 'block';
+
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            panel.style.display = isVisible ? 'none' : 'block';
+
+            if (isVisible) {
+                document.getElementById('dashboard').classList.add('active');
+                document.querySelector('.menu-item[onclick="showTab(\'dashboard\')"]').classList.add('active');
+            }
+        }
+
+        function logout() {
+            window.location.href = 'login.html';
+        }
+
+        // Academic Performance Chart
+        const ctx = document.getElementById('academicChart').getContext('2d');
+        const academicChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Data Structures', 'Algorithm Design', 'Database Management'],
+                datasets: [{
+                    label: 'Marks Obtained (%)',
+                    data: [92, 85, 78],
+                    backgroundColor: 'rgba(74, 111, 165, 0.6)',
+                    borderColor: '#4a6fa5',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Subject-wise Performance'
+                    },
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (tooltipItem) => `Marks: ${tooltipItem.raw}%`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        title: {
+                            display: true,
+                            text: 'Marks (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Subjects'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

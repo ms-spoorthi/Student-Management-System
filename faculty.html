@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #3498bb;
+            --secondary-color: #2ecc79;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --warning-color: #e74c3c;
+            --success-color: #27ae60;
+            --text-color: #333;
+            --border-color: #ddd;
+            --hover-color: rgba(74, 111, 165, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: var(--text-color);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 15px 0;
+            overflow-y: auto;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+
+        .college-brand {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .college-brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .college-brand span {
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: white;
+        }
+
+        .sidebar-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            margin-bottom: 5px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            padding: 15px 0;
+        }
+
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-item:hover {
+            background-color: #0369a1;
+        }
+
+        .menu-item.active i,
+        .menu-item.active span {
+            color: white;
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            padding: 0;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background-color: var(--warning-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .content-area {
+            padding: 25px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .dashboard-heading {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .dashboard-subheading {
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-weight: 400;
+            font-size: 1rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-header h3 {
+            color: var(--dark-color);
+            font-size: 1.2rem;
+        }
+
+        .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .card-body {
+            color: #666;
+        }
+
+        .list-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .date-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .status-label {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .status-approved {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .data-table tr:hover {
+            background-color: var(--hover-color);
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background-color: var(--hover-color);
+            color: var(--primary-color);
+        }
+
+        .tab.active {
+            border-bottom: 3px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #3a5a84;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a8b7d;
+        }
+
+        .btn-danger {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background-color: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-secondary {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .badge-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background-color: #fef9c3;
+            color: #854d0e;
+        }
+
+        .badge-danger {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .progress-container {
+            background-color: #e9ecef;
+            border-radius: 8px;
+            height: 8px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            transition: width 0.5s;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 25px 15px;
+            cursor: pointer;
+        }
+
+        .stats-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .stats-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .fps-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-top: 25px;
+        }
+
+        .fps-score {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .fps-formula {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .fps-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .fps-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .fps-item h4 {
+            margin-bottom: 5px;
+            color: var(--dark-color);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .fps-item p {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .fps-item .description {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            color: #666;
+        }
+
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .class-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .class-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+        }
+
+        .class-header h4 {
+            margin-bottom: 5px;
+        }
+
+        .class-info {
+            padding: 15px;
+        }
+
+        .class-details {
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-list {
+            margin-top: 25px;
+        }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .student-item:last-child {
+            border-bottom: none;
+        }
+
+        .student-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .student-info {
+            flex-grow: 1;
+        }
+
+        .student-name {
+            font-weight: 500;
+        }
+
+        .student-id {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .attendance-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .attendance-btn {
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+        }
+
+        .present-btn {
+            background-color: var(--success-color);
+        }
+
+        .present-btn:hover {
+            background-color: #219653;
+        }
+
+        .absent-btn {
+            background-color: var(--warning-color);
+        }
+
+        .absent-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .assignment-list {
+            margin-top: 25px;
+        }
+
+        .assignment-card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .assignment-title {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .assignment-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .meta-item i {
+            margin-right: 5px;
+            color: var(--primary-color);
+        }
+
+        .assignment-description {
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .assignment-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .semester-section {
+            margin-bottom: 30px;
+        }
+
+        .semester-section h2 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .modal-close:hover {
+            color: var(--warning-color);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @media (max-width: 992px) {
+            .card-grid, .fps-breakdown, .class-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+                position: fixed;
+                width: 280px;
+                z-index: 1000;
+                height: 100%;
+            }
+
+            .sidebar.active {
+                display: block;
+            }
+
+            .header {
+                padding: 15px;
+            }
+
+            .mobile-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: var(--dark-color);
+                font-size: 1.5rem;
+                cursor: pointer;
+                margin-right: 15px;
+            }
+
+            .content-area {
+                padding: 15px;
+            }
+
+            .card-grid, .fps-breakdown, .class-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="college-brand">
+                <img src="pes.png" alt="College Logo">
+                <span>PESITM COLLEGE</span>
+            </div>
+            <div class="sidebar-header">
+                <h2>Faculty Dashboard</h2>
+                <p>Welcome, Prof. Sarah Johnson!</p>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active" onclick="showTab('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item" onclick="showTab('personal-info')">
+                    <i class="fas fa-user"></i>
+                    <span>Personal Information</span>
+                </div>
+                <div class="menu-item" onclick="showTab('assignments')">
+                    <i class="fas fa-tasks"></i>
+                    <span>Check Assignments</span>
+                </div>
+                <div class="menu-item" onclick="showTab('content-upload')">
+                    <i class="fas fa-upload"></i>
+                    <span>Content Upload</span>
+                </div>
+                <div class="menu-item" onclick="showTab('assessment')">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Assessment Tools</span>
+                </div>
+                <div class="menu-item" onclick="showTab('project-coordination')">
+                    <i class="fas fa-project-diagram"></i>
+                    <span>Project Coordination</span>
+                </div>
+                <div class="menu-item" onclick="showTab('attendance')">
+                    <i class="fas fa-user-check"></i>
+                    <span>Attendance Marking</span>
+                </div>
+                <div class="menu-item" onclick="showTab('communication')">
+                    <i class="fas fa-comments"></i>
+                    <span>Communication & Notices</span>
+                </div>
+                <div class="menu-item" onclick="showTab('grades')">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Grade Submission</span>
+                </div>
+                <div class="menu-item" onclick="showTab('fps')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Faculty Performance Score</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Top Header -->
+            <div class="header">
+                <div class="mobile-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </div>
+                <div class="user-actions">
+                    <button class="logout-btn" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Tab -->
+                <div id="dashboard" class="tab-content active">
+                    <h1 class="dashboard-heading">Faculty Dashboard</h1>
+                    <p class="dashboard-subheading">Overview of your academic activities and responsibilities</p>
+
+                    <!-- Quick Stats -->
+                    <div class="card-grid">
+                        <div class="card stats-card" onclick="showDetails('total-students')">
+                            <i class="fas fa-users" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">156</div>
+                            <div class="stats-label">Total Students</div>
+                        </div>
+
+                        <div class="card stats-card" onclick="showDetails('class-details')">
+                            <i class="fas fa-chalkboard" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">5</div>
+                            <div class="stats-label">Classes</div>
+                        </div>
+
+                        <div class="card stats-card" onclick="showDetails('pending-assignments')">
+                            <i class="fas fa-clipboard" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">8</div>
+                            <div class="stats-label">Pending Assignments</div>
+                        </div>
+
+                        <div class="card stats-card" onclick="showDetails('mentees')">
+                            <i class="fas fa-user-graduate" style="font-size: 2rem; color: var(--primary-color);"></i>
+                            <div class="stats-value">12</div>
+                            <div class="stats-label">Mentees</div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Content for Modals -->
+                    <div id="total-students" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Total Students</h3>
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-body">
+                                <p>You are currently teaching <strong>156 students</strong> across all your courses.</p>
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Course</th>
+                                                <th>Section</th>
+                                                <th>Student Count</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Data Structures</td>
+                                                <td>CSE-2B</td>
+                                                <td>45</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Algorithm Design</td>
+                                                <td>CSE-3A</td>
+                                                <td>38</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Database Management</td>
+                                                <td>CSE-2C</td>
+                                                <td>48</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Machine Learning</td>
+                                                <td>CSE-4A</td>
+                                                <td>25</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="class-details" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Class Details</h3>
+                                <i class="fas fa-chalkboard"></i>
+                            </div>
+                            <div class="card-body">
+                                <p>You are teaching <strong>5 classes</strong> this semester.</p>
+                                <div class="class-grid">
+                                    <div class="class-card">
+                                        <div class="class-header">
+                                            <h4>Data Structures</h4>
+                                            <div>CSE-2B</div>
+                                        </div>
+                                        <div class="class-info">
+                                            <div class="class-details">
+                                                <div class="detail-item">
+                                                    <span>Room</span>
+                                                    <span>304</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Students</span>
+                                                    <span>45</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Schedule</span>
+                                                    <span>Mon, Wed 9:00 AM</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="class-card">
+                                        <div class="class-header">
+                                            <h4>Algorithm Design</h4>
+                                            <div>CSE-3A</div>
+                                        </div>
+                                        <div class="class-info">
+                                            <div class="class-details">
+                                                <div class="detail-item">
+                                                    <span>Room</span>
+                                                    <span>201</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Students</span>
+                                                    <span>38</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Schedule</span>
+                                                    <span>Tue, Thu 11:00 AM</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="class-card">
+                                        <div class="class-header">
+                                            <h4>Database Management</h4>
+                                            <div>CSE-2C</div>
+                                        </div>
+                                        <div class="class-info">
+                                            <div class="class-details">
+                                                <div class="detail-item">
+                                                    <span>Room</span>
+                                                    <span>Lab 3</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Students</span>
+                                                    <span>48</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Schedule</span>
+                                                    <span>Wed, Fri 2:00 PM</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="class-card">
+                                        <div class="class-header">
+                                            <h4>Machine Learning</h4>
+                                            <div>CSE-4A</div>
+                                        </div>
+                                        <div class="class-info">
+                                            <div class="class-details">
+                                                <div class="detail-item">
+                                                    <span>Room</span>
+                                                    <span>AI Lab</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Students</span>
+                                                    <span>25</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Schedule</span>
+                                                    <span>Mon, Thu 3:30 PM</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="class-card">
+                                        <div class="class-header">
+                                            <h4>Software Engineering</h4>
+                                            <div>CSE-4B</div>
+                                        </div>
+                                        <div class="class-info">
+                                            <div class="class-details">
+                                                <div class="detail-item">
+                                                    <span>Room</span>
+                                                    <span>305</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Students</span>
+                                                    <span>30</span>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <span>Schedule</span>
+                                                    <span>Tue, Fri 10:00 AM</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pending-assignments" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Pending Assignments</h3>
+                                <i class="fas fa-clipboard"></i>
+                            </div>
+                            <div class="card-body">
+                                <p>You have <strong>8 pending assignments</strong> to review.</p>
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Course</th>
+                                                <th>Assignment</th>
+                                                <th>Due Date</th>
+                                                <th>Submissions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Algorithm Design</td>
+                                                <td>Greedy Algorithms</td>
+                                                <td>April 15, 2025</td>
+                                                <td>32/38</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Database Management</td>
+                                                <td>SQL Lab Exercise</td>
+                                                <td>April 18,  US 2025</td>
+                                                <td>45/48</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Data Structures</td>
+                                                <td>Linked List Assignment</td>
+                                                <td>April 20, 2025</td>
+                                                <td>40/45</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Machine Learning</td>
+                                                <td>Neural Network Project</td>
+                                                <td>April 25, 2025</td>
+                                                <td>20/25</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Software Engineering</td>
+                                                <td>UML Diagrams</td>
+                                                <td>April 22, 2025</td>
+                                                <td>25/30</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Data Structures</td>
+                                                <td>Tree Traversal</td>
+                                                <td>April 23, 2025</td>
+                                                <td>38/45</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Algorithm Design</td>
+                                                <td>Dynamic Programming</td>
+                                                <td>April 24, 2025</td>
+                                                <td>30/38</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Database Management</td>
+                                                <td>Normalization Exercise</td>
+                                                <td>April 26, 2025</td>
+                                                <td>42/48</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mentees" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Mentees</h3>
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="card-body">
+                                <p>You are mentoring <strong>12 students</strong>.</p>
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Student ID</th>
+                                                <th>Course</th>
+                                                <th>Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Aisha Khan</td>
+                                                <td>CSE2B-1001</td>
+                                                <td>Data Structures</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f2949c869d94df9a99909fb2979b9898919391dc979687">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Raj Patel</td>
+                                                <td>CSE2B-1002</td>
+                                                <td>Data Structures</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7c5d6c899c7d6c3d2dbf7d4d8dbdbd2d0d299d2d3c2">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Sarah Lee</td>
+                                                <td>CSE2B-1003</td>
+                                                <td>Data Structures</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b5c6d4c7d4dd9bd9d0d0f5d6dad9d9d0d2d09bd0d1c0">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>John Doe</td>
+                                                <td>CSE2C-2001</td>
+                                                <td>Database Management</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a7c3c6c2c489c3c8c2e7c4c8cbcbc2c0c289c2c3d2">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Jane Smith</td>
+                                                <td>CSE2C-2002</td>
+                                                <td>Database Management</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f49e959a91da8799928f93b4979b9898919391da919081">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Michael Brown</td>
+                                                <td>CSE3A-3001</td>
+                                                <td>Algorithm Design</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e586808a81888c85c789998499a5868a8989828082c98c8d9c">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Emily Davis</td>
+                                                <td>CSE3A-3002</td>
+                                                <td>Algorithm Design</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ef8a82868396c18b8e998692af8c8083838a888ac18a8b9a">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>David Wilson</td>
+                                                <td>CSE4A-4001</td>
+                                                <td>Machine Learning</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e482879087ce9789819e8283a4878b8888818381ce858495">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Emma Johnson</td>
+                                                <td>CSE4A-4002</td>
+                                                <td>Machine Learning</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b7d2dadad693d6d3d4d2cfd3d2f7d4d8dbdbd2d0d293d8d9c8">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Liam Garcia</td>
+                                                <td>CSE4B-5001</td>
+                                                <td>Software Engineering</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f19d98909cdf969085949e96b1929e9d9d949694df949485">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Olivia Martinez</td>
+                                                <td>CSE4B-5002</td>
+                                                <td>Software Engineering</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2ada8adada6aca7ecafa3b0b6a3a8b382a1adaeaeadaeadeca7a6b7">[email&#160;protected]</a></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Noah Thompson</td>
+                                                <td>CSE4B-5003</td>
+                                                <td>Software Engineering</td>
+                                                <td><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e2838c828bcdf78b8c8e938d8ca2818d8e8e878587cc878697">[email&#160;protected]</a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Overview -->
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Performance Overview</h3>
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PERSONAL INFO TAB -->
+                <div id="personal-info" class="tab-content">
+                    <h1 class="dashboard-heading">Personal Information</h1>
+                    <p class="dashboard-subheading">Manage your personal and professional details</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Profile Information</h3>
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">Full Name</label>
+                                    <input type="text" class="form-control" id="name" value="Sarah Johnson">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" class="form-control" id="email" value="sarah.johnson@valleycollege.edu">
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" class="form-control" id="phone" value="(555) 123-4567">
+                                </div>
+                                <div class="form-group">
+                                    <label for="department">Department</label>
+                                    <input type="text" class="form-control" id="department" value="Computer Science Engineering">
+                                </div>
+                                <div class="form-group">
+                                    <label for="designation">Designation</label>
+                                    <input type="text" class="form-control" id="designation" value="Associate Professor">
+                                </div>
+                                <div class="form-group">
+                                    <label for="joinDate">Date of Joining</label>
+                                    <input type="date" class="form-control" id="joinDate" value="2018-07-15">
+                                </div>
+                                <div class="form-group">
+                                    <label for="bio">Biography</label>
+                                    <textarea class="form-control" id="bio">Dr. Sarah Johnson is an Associate Professor in the Department of Computer Science Engineering with over 10 years of experience in teaching and research. Her research interests include Machine Learning, Data Science, and Algorithm Optimization. She has published numerous papers in reputed journals and has been awarded for excellence in teaching.</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update Profile</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Qualification & Experience</h3>
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="card-body">
+                            <h4>Educational Qualifications</h4>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Degree</th>
+                                            <th>University</th>
+                                            <th>Year</th>
+                                            <th>Specialization</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Ph.D.</td>
+                                            <td>Stanford University</td>
+                                            <td>2015</td>
+                                            <td>Computer Science</td>
+                                        </tr>
+                                        <tr>
+                                            <td>M.S.</td>
+                                            <td>Massachusetts Institute of Technology</td>
+                                            <td>2012</td>
+                                            <td>Data Science</td>
+                                        </tr>
+                                        <tr>
+                                            <td>B.Tech</td>
+                                            <td>Indian Institute of Technology, Delhi</td>
+                                            <td>2010</td>
+                                            <td>Computer Science</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <h4 style="margin-top: 25px;">Work Experience</h4>
+                            <div class="table-responsive">
+                                <tableETC class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Position</th>
+                                            <th>Organization</th>
+                                            <th>Duration</th>
+                                            <th>Responsibilities</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Associate Professor</td>
+                                            <td>Valley College of Engineering</td>
+                                            <td>2018 - Present</td>
+                                            <td>Teaching, Research, Student Mentoring</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Assistant Professor</td>
+                                            <td>Tech University</td>
+                                            <td>2015 - 2018</td>
+                                            <td>Teaching Computer Science courses, Research</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Research Assistant</td>
+                                            <td>Stanford University</td>
+                                            <td>2012 - 2015</td>
+                                            <td>Algorithm Research, Lab Assistance</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div style="margin-top: 25px;">
+                                <button class="btn btn-primary">Add Qualification</button>
+                                <button class="btn btn-secondary" style="margin-left: 10px;">Add Experience</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignments Tab -->
+                <div id="assignments" class="tab-content">
+                    <h1 class="dashboard-heading">Check Assignments</h1>
+                    <p class="dashboard-subheading">Review and grade student assignments</p>
+                    <div class="assignment-list">
+                        <div class="card" style="margin-top: 25px;">
+                            <div class="card-header">
+                                <h3>Student Uploaded Projects & Files</h3>
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Title</th>
+                                                <th>Student</th>
+                                                <th>Upload Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Project</td>
+                                                <td>AI Chatbot</td>
+                                                <td>Aisha Khan</td>
+                                                <td>April 22, 2025</td>
+                                                <td><span class="status-label status-pending">Pending</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-secondary btn-sm">View</button>
+                                                        <button class="btn btn-primary btn-sm">Evaluate</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Other</td>
+                                                <td>Research Article Draft</td>
+                                                <td>Raj Patel</td>
+                                                <td>April 23, 2025</td>
+                                                <td><span class="status-label status-pending">Pending</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-secondary btn-sm">View</button>
+                                                        <button class="btn btn-primary btn-sm">Evaluate</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Pending Assignments</h3>
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Course</th>
+                                                <th>Assignment</th>
+                                                <th>Due Date</th>
+                                                <th>Submissions</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Algorithm Design</td>
+                                                <td>Assignment #3: Greedy Algorithms</td>
+                                                <td>April 15, 2025</td>
+                                                <td>32/38</td>
+                                                <td><span class="status-label status-pending">Pending</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-primary btn-sm">Grade</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Database Management</td>
+                                                <td>SQL Lab Exercise</td>
+                                                <td>April 18, 2025</td>
+                                                <td>45/48</td>
+                                                <td><span class="status-label status-pending">Pending</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-primary btn-sm">Grade</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Upload Tab -->
+                <div id="content-upload" class="tab-content">
+                    <h1 class="dashboard-heading">Content Upload</h1>
+                    <p class="dashboard-subheading">Share course materials, lecture notes, and resources with students</p>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Recent Uploads</h3>
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Course</th>
+                                            <th>Type</th>
+                                            <th>Upload Date</th>
+                                            <th>File</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Unit 3 - Linked Lists</td>
+                                            <td>Data Structures</td>
+                                            <td>Lecture Notes</td>
+                                            <td>April 20, 2025</td>
+                                            <td><button class="btn btn-secondary btn-sm">Download</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>SQL Lab Manual</td>
+                                            <td>Database Management</td>
+                                            <td>Lab Manual</td>
+                                            <td>April 18, 2025</td>
+                                            <td><button class="btn btn-secondary btn-sm">Download</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Greedy Algorithms Slides</td>
+                                            <td>Algorithm Design</td>
+                                            <td>PPT</td>
+                                            <td>April 15, 2025</td>
+                                            <td><button class="btn btn-secondary btn-sm">Download</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Upload New Material</h3>
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Dummy upload successful!');">
+                                <div class="form-group">
+                                    <label for="course">Course</label>
+                                    <select class="form-control" id="course">
+                                        <option>Data Structures</option>
+                                        <option>Algorithm Design</option>
+                                        <option>Database Management</option>
+                                        <option>Machine Learning</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fileType">Material Type</label>
+                                    <select class="form-control" id="fileType">
+                                        <option>Lecture Notes</option>
+                                        <option>Slides</option>
+                                        <option>Lab Manual</option>
+                                        <option>Assignment</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fileUpload">Select File</label>
+                                    <input type="file" class="form-control" id="fileUpload">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Upload Material</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assessment Tools Tab -->
+                <div id="assessment" class="tab-content">
+                    <h1 class="dashboard-heading">Assessment Tools</h1>
+                    <p class="dashboard-subheading">Create and manage quizzes, tests, and other assessment materials</p>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Create New Assessment</h3>
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="assessment-course">Course</label>
+                                    <select class="form-control" id="assessment-course">
+                                        <option>Data Structures</option>
+                                        <option>Algorithm Design</option>
+                                        <option>Database Management</option>
+                                        <option>Machine Learning</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assessment-type">Assessment Type</label>
+                                    <select class="form-control" id="assessment-type">
+                                        <option>Quiz</option>
+                                        <option>Assignment</option>
+                                        <option>Project</option>
+                                        <option>Mid-Term Exam</option>
+                                        <option>Final Exam</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="assessment-title">Title</label>
+                                    <input type="text" class="form-control" id="assessment-title" placeholder="Enter assessment title">
+                                </div>
+                                <div class="form-group">
+                                    <label for="assessment-due">Due Date</label>
+                                    <input type="datetime-local" class="form-control" id="assessment-due">
+                                </div>
+                                <div class="form-group">
+                                    <label for="assessment-instructions">Instructions</label>
+                                    <textarea class="form-control" id="assessment-instructions" rows="3" placeholder="Enter assessment instructions"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Questions</label>
+                                    <div id="question-builder">
+                                        <!-- Questions will be added here dynamically -->
+                                    </div>
+                                    <button type="button" class="btn btn-secondary" onclick="addQuestion()">Add Question</button>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create Assessment</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Existing Assessments</h3>
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Course</th>
+                                            <th>Type</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Linked List Quiz</td>
+                                            <td>Data Structures</td>
+                                            <td>Quiz</td>
+                                            <td>May 5, 2025</td>
+                                            <td><span class="status-label status-approved">Active</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-secondary btn-sm">View</button>
+                                                    <button class="btn btn-primary btn-sm">Edit</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>SQL Assignment</td>
+                                            <td>Database Management</td>
+                                            <td>Assignment</td>
+                                            <td>May 10, 2025</td>
+                                            <td><span class="status-label status-approved">Active</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-secondary btn-sm">View</button>
+                                                    <button class="btn btn-primary btn-sm">Edit</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Greedy Algorithms Test</td>
+                                            <td>Algorithm Design</td>
+                                            <td>Quiz</td>
+                                            <td>May 15, 2025</td>
+                                            <td><span class="status-label status-pending">Draft</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-secondary btn-sm">View</button>
+                                                    <button class="btn btn-primary btn-sm">Edit</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Coordination Tab -->
+                <div id="project-coordination" class="tab-content">
+                    <h1 class="dashboard-heading">Project Coordination</h1>
+                    <p class="dashboard-subheading">Manage student projects, groups, and evaluations</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Current Projects</h3>
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Project Title</th>
+                                            <th>Course</th>
+                                            <th>Groups</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>AI Chatbot Implementation</td>
+                                            <td>Machine Learning</td>
+                                            <td>5</td>
+                                            <td>June 10, 2025</td>
+                                            <td><span class="status-label status-approved">Ongoing</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-secondary btn-sm">View</button>
+                                                    <button class="btn btn-primary btn-sm">Manage</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Database Design Project</td>
+                                            <td>Database Management</td>
+                                            <td>8</td>
+                                            <td>May 25, 2025</td>
+                                            <td><span class="status-label status-approved">Ongoing</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-secondary btn-sm">View</button>
+                                                    <button class="btn btn-primary btn-sm">Manage</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Algorithm Visualization</td>
+                                            <td>Algorithm Design</td>
+                                            <td>6</td>
+                                            <td>June 5, 2025</td>
+                                            <td><span class="status-label status-pending">Planning</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn btn-secondary btn-sm">View</button>
+                                                    <button class="btn btn-primary btn-sm">Manage</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Create New Project</h3>
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="card-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="project-course">Course</label>
+                                    <select class="form-control" id="project-course">
+                                        <option>Data Structures</option>
+                                        <option>Algorithm Design</option>
+                                        <option>Database Management</option>
+                                        <option>Machine Learning</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="project-title">Project Title</label>
+                                    <input type="text" class="form-control" id="project-title" placeholder="Enter project title">
+                                </div>
+                                <div class="form-group">
+                                    <label for="project-description">Description</label>
+                                    <textarea class="form-control" id="project-description" rows="3" placeholder="Enter project description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="project-duedate">Due Date</label>
+                                    <input type="date" class="form-control" id="project-duedate">
+                                </div>
+                                <div class="form-group">
+                                    <label for="project-groupsize">Group Size</label>
+                                    <input type="number" class="form-control" id="project-groupsize" min="1" max="10" value="3">
+                                </div>
+                                <div class="form-group">
+                                    <label for="project-resources">Resources (Optional)</label>
+                                    <input type="file" class="form-control" id="project-resources" multiple>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create Project</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Marking Tab -->
+                <div id="attendance" class="tab-content">
+                    <h1 class="dashboard-heading">Attendance Marking</h1>
+                    <p class="dashboard-subheading">Record and manage student attendance</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Today's Classes</h3>
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-item">
+                                <div>
+                                    <strong>Data Structures</strong>
+                                    <div>CSE-2B | Room 304 | 9:00 - 10:30 AM</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="markAttendance('CSE301')">Mark Attendance</button>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Algorithm Design</strong>
+                                    <div>CSE-3A | Room 201 | 11:00 - 12:30 PM</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="markAttendance('CSE405')">Mark Attendance</button>
+                            </div>
+                            <div class="list-item">
+                                <div>
+                                    <strong>Database Management</strong>
+                                    <div>CSE-2C | Lab 3 | 2:00 - 3:30 PM</div>
+                                </div>
+                                <button class="btn btn-primary" onclick="markAttendance('CSE202')">Mark Attendance</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Attendance Records</h3>
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Course</th>
+                                            <th>Class</th>
+                                            <th>Present</th>
+                                            <th>Absent</th>
+                                            <th>Percentage</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>April 28, 2025</td>
+                                            <td>Data Structures</td>
+                                            <td>CSE-2B</td>
+                                            <td>42</td>
+                                            <td>3</td>
+                                            <td>93%</td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>April 26, 2025</td>
+                                            <td>Algorithm Design</td>
+                                            <td>CSE-3A</td>
+                                            <td>35</td>
+                                            <td>3</td>
+                                            <td>92%</td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>April 24, 2025</td>
+                                            <td>Database Management</td>
+                                            <td>CSE-2C</td>
+                                            <td>45</td>
+                                            <td>3</td>
+                                            <td>94%</td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="attendance-modal" class="modal">
+                        <div class="modal-content">
+                            <button class="modal-close" onclick="cancelAttendance()">×</button>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 id="attendance-modal-title">Mark Attendance</h3>
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div class="card-body">
+                                    <div class="student-list" id="attendance-list">
+                                        <!-- Student list will be populated here -->
+                                    </div>
+                                    <div class="action-buttons" style="margin-top: 20px;">
+                                        <button class="btn btn-primary" onclick="submitAttendance()">Submit Attendance</button>
+                                        <button class="btn btn-secondary" onclick="cancelAttendance()">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Communication & Notices Tab -->
+                <div id="communication" class="tab-content">
+                    <h1 class="dashboard-heading">Communication & Notices</h1>
+                    <p class="dashboard-subheading">Send announcements and communicate with students</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Send Announcement</h3>
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Announcement sent successfully!');">
+                                <div class="form-group">
+                                    <label for="announcement-subject">Subject</label>
+                                    <input type="text" class="form-control" id="announcement-subject" placeholder="Enter announcement subject">
+                                </div>
+                                <div class="form-group">
+                                    <label for="announcement-recipients">Recipients</label>
+                                    <select class="form-control" id="announcement-recipients" multiple>
+                                        <option>All Students</option>
+                                        <option>Data Structures (CSE-2B)</option>
+                                        <option>Algorithm Design (CSE-3A)</option>
+                                        <option>Database Management (CSE-2C)</option>
+                                        <option>Machine Learning (CSE-4A)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="announcement-message">Message</label>
+                                    <textarea class="form-control" id="announcement-message" rows="5" placeholder="Enter your announcement message"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="announcement-attachments">Attachments (Optional)</label>
+                                    <input type="file" class="form-control" id="announcement-attachments" multiple>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Send Announcement</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Recent Announcements</h3>
+                            <i class="fas fa-history"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Subject</th>
+                                            <th>Recipients</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>April 25, 2025</td>
+                                            <td>Mid-Term Exam Schedule</td>
+                                            <td>All Students</td>
+                                            <td><span class="status-label status-approved">Sent</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>April 22, 2025</td>
+                                            <td>Project Submission Guidelines</td>
+                                            <td>Database Management (CSE-2C)</td>
+                                            <td><span class="status-label status-approved">Sent</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>April 20, 2025</td>
+                                            <td>Assignment Deadline Extension</td>
+                                            <td>Algorithm Design (CSE-3A)</td>
+                                            <td><span class="status-label status-approved">Sent</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Student Messages</h3>
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Student</th>
+                                            <th>Subject</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>April 26, 2025</td>
+                                            <td>Aisha Khan</td>
+                                            <td>Query about Assignment #3</td>
+                                            <td><span class="status-label status-pending">Unread</span></td>
+                                           卫生 <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>April 24, 2025</td>
+                                            <td>Raj Patel</td>
+                                            <td>Project Approval Request</td>
+                                            <td><span class="status-label status-approved">Replied</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>April 22, 2025</td>
+                                            <td>Sarah Lee</td>
+                                            <td>Leave Application</td>
+                                            <td><span class="status-label status-approved">Approved</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grade Submission Tab -->
+                <div id="grades" class="tab-content">
+                    <h1 class="dashboard-heading">Grade Submission</h1>
+                    <p class="dashboard-subheading">Submit and manage student grades</p>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Grade Submission Status</h3>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Course</th>
+                                            <th>Assessment</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Data Structures</td>
+                                            <td>Mid-Term Exam</td>
+                                            <td>May 5, 2025</td>
+                                            <td><span class="status-label status-pending">Pending</span></td>
+                                            <td><button class="btn btn-primary btn-sm">Enter Grades</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Algorithm Design</td>
+                                            <td>Assignment #3</td>
+                                            <td>April 30, 2025</td>
+                                            <td><span class="status-label status-approved">Submitted</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Database Management</td>
+                                            <td>Lab Exercise</td>
+                                            <td>April 25, 2025</td>
+                                            <td><span class="status-label status-approved">Submitted</span></td>
+                                            <td><button class="btn btn-secondary btn-sm">View</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Submit Grades</h3>
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="card-body">
+                            <form onsubmit="event.preventDefault(); alert('Grades submitted successfully!');">
+                                <div class="form-group">
+                                    <label for="grade-course">Course</label>
+                                    <select class="form-control" id="grade-course">
+                                        <option>Data Structures</option>
+                                        <option>Algorithm Design</option>
+                                        <option>Database Management</option>
+                                        <option>Machine Learning</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="grade-assessment">Assessment</label>
+                                    <select class="form-control" id="grade-assessment">
+                                        <option>Mid-Term Exam</option>
+                                        <option>Final Exam</option>
+                                        <option>Assignment</option>
+                                        <option>Quiz</option>
+                                        <option>Project</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="grade-file">Upload Grade File (CSV)</label>
+                                    <input type="file" class="form-control" id="grade-file" accept=".csv">
+                                </div>
+                                <div class="form-group">
+                                    <label for="grade-comment">Comments (Optional)</label>
+                                    <textarea class="form-control" id="grade-comment" rows="3" placeholder="Enter any comments about the grades"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit Grades</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Faculty Performance<!-- Faculty Performance Score Tab -->
+                <div id="fps" class="tab-content">
+                    <h1 class="dashboard-heading">Faculty Performance Score</h1>
+                    <p class="dashboard-subheading">Review your performance metrics and scores</p>
+
+                    <div class="fps-container">
+                        <h2>Overall Performance Score</h2>
+                        <div class="fps-score">92/100</div>
+                        <p style="text-align: center; color: #666;">Based on teaching effectiveness, research output, and student feedback</p>
+
+                        <div class="fps-formula">
+                            FPS = (0.4 × Teaching Score) + (0.3 × Research Score) + (0.2 × Student Feedback) + (0.1 × Service Contribution)
+                        </div>
+
+                        <div class="fps-breakdown">
+                            <div class="fps-item">
+                                <h4>Teaching Score <span class="badge badge-primary">40%</span></h4>
+                                <p>95</p>
+                                <div class="description">Based on course evaluations, attendance, and assignment completion rates</div>
+                            </div>
+                            <div class="fps-item">
+                                <h4>Research Score <span class="badge badge-primary">30%</span></h4>
+                                <p>88</p>
+                                <div class="description">Based on publications, grants, and research impact</div>
+                            </div>
+                            <div class="fps-item">
+                                <h4>Student Feedback <span class="badge badge-primary">20%</span></h4>
+                                <p>90</p>
+                                <div class="description">Based on student surveys and course feedback</div>
+                            </div>
+                            <div class="fps-item">
+                                <h4>Service Contribution <span class="badge badge-primary">10%</span></h4>
+                                <p>85</p>
+                                <div class="description">Based on committee work, mentoring, and institutional service</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 25px;">
+                        <div class="card-header">
+                            <h3>Performance History</h3>
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="fpsHistoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Sidebar Toggle for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Tab Navigation
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.menu-item[onclick="showTab('${tabId}')"]`).classList.add('active');
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('active');
+            }
+        }
+
+        // Logout Function
+        function logout() {
+            alert('You have been logged out.');
+            // Add actual logout logic here
+        }
+
+        // Show Details Modal
+        function showDetails(contentId) {
+            const modal = document.createElement('div');
+            modal.className = 'modal active';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                    ${document.getElementById(contentId).innerHTML}
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => {
+                if (e.target === modal) modal.remove();
+            };
+        }
+
+        // Attendance Marking
+        const dummyStudents = [
+            { id: 'CSE2B-1001', name: 'Aisha Khan' },
+            { id: 'CSE2B-1002', name: 'Raj Patel' },
+            { id: 'CSE2B-1003', name: 'Sarah Lee' },
+            // Add more dummy students as needed
+        ];
+
+        function markAttendance(courseId) {
+            const modal = document.getElementById('attendance-modal');
+            const title = document.getElementById('attendance-modal-title');
+            const list = document.getElementById('attendance-list');
+            title.textContent = `Mark Attendance - ${courseId}`;
+            list.innerHTML = dummyStudents.map(student => `
+                <div class="student-item">
+                    <div class="student-avatar">${student.name.charAt(0)}</div>
+                    <div class="student-info">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-id">${student.id}</div>
+                    </div>
+                    <div class="attendance-actions">
+                        <button class="attendance-btn present-btn" onclick="markStudent('${student.id}', 'present')">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="attendance-btn absent-btn" onclick="markStudent('${student.id}', 'absent')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            modal.classList.add('active');
+        }
+
+        function markStudent(studentId, status) {
+            console.log(`Student ${studentId} marked as ${status}`);
+            // Add actual attendance marking logic here
+        }
+
+        function submitAttendance() {
+            alert('Attendance submitted successfully!');
+            document.getElementById('attendance-modal').classList.remove('active');
+        }
+
+        function cancelAttendance() {
+            document.getElementById('attendance-modal').classList.remove('active');
+        }
+
+        // Dynamic Question Builder for Assessments
+        let questionCount = 0;
+        function addQuestion() {
+            questionCount++;
+            const builder = document.getElementById('question-builder');
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'form-group';
+            questionDiv.innerHTML = `
+                <label>Question ${questionCount}</label>
+                <input type="text" class="form-control" placeholder="Enter question text" style="margin-bottom: 10px;">
+                <select class="form-control" style="margin-bottom: 10px;">
+                    <option>Multiple Choice</option>
+                    <option>Short Answer</option>
+                    <option>Essay</option>
+                </select>
+                <textarea class="form-control" placeholder="Enter answer options (if applicable)" rows="3"></textarea>
+                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove()" style="margin-top: 10px;">Remove Question</button>
+            `;
+            builder.appendChild(questionDiv);
+        }
+
+        // Chart.js for Performance Overview
+        const performanceChart = new Chart(document.getElementById('performanceChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Teaching Performance',
+                    data: [85, 88, 90, 92, 95],
+                    borderColor: '#3498db',
+                    fill: false
+                }, {
+                    label: 'Student Feedback',
+                    data: [80, 82, 85, 88, 90],
+                    borderColor: '#2ecc71',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Chart.js for FPS History
+        const fpsHistoryChart = new Chart(document.getElementById('fpsHistoryChart'), {
+            type: 'bar',
+            data: {
+                labels: ['2023 Q1', '2023 Q2', '2023 Q3', '2023 Q4', '2024 Q1', '2024 Q2', '2024 Q3', '2024 Q4', '2025 Q1'],
+                datasets: [{
+                    label: 'Faculty Performance Score',
+                    data: [85, 87, 88, 90, 91, 92, 93, 92, 92],
+                    backgroundColor: '#3498db'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
